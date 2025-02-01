@@ -24,6 +24,7 @@ The Teams goal is to provide a quick and effortless way for customers in Raleigh
 ### Project Objectives
 1. **Enable online ordering functionality** for customers to browse the menu, customize orders, and complete secure payments.
 2. **Implement a user-friendly interface** that ensures user satisfaction based on usability testing and feedback.
+3. **Focus on core features and avoid scope creep** The project should prioritize the essential functionalities (ordering, payment, basic order management) and avoid adding unnecessary complexity or features that are beyond the scope of the current project.
 
 ### Project Scope
 #### Included in Scope:
