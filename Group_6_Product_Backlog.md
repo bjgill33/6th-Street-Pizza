@@ -35,8 +35,6 @@
 |          | 5.3     | Merge new features branch to main branch                                           | TBD         |           |           | High if considered | Not Started | TBD                 |   |   |   |   |
 |          | 5.4     | Deploy new application to AWS                                                      | TBD         |           |           | High if considered | Not Started | TBD                 |   |   |   |   |
 |          | 5.5     | Update Documentation for task completed during Sprint                              | TBD         |           |           | Medium             | Not Started | TBD                 |   |   |   |   |
-|          |         |                                                                                    | TBD         |           |           |                    | Not Started | TBD                 |   |   |   |   |
-|          |         |                                                                                    | TBD         |           |           |                    |             |                     |   |   |   |   |
-|          |         |                                                                                    |             |           |           |                    |             |                     |   |   |   |   |
+
 
 
