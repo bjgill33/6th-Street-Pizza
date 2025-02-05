@@ -1,3 +1,3 @@
-# stone-cap-pizza
-This is a Capstone project repository for the Stone Cap Pizza Company.
-### ***"Stone Cap Pizza ... the Pinnacle of Pizza Perfection"***
+# 6th-Street-Pizza
+This is a Capstone project repository for the 6th-Street-Pizza Company.
+
