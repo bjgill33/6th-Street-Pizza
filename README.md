@@ -7,7 +7,7 @@ Brian Gill
 ### Group Members
 - Alexander Bass
 - Joe Dacci
-- Kodee Ethridge
+- Kodee Ethridg
 - Arthur L Holmes
 - Elham Jahandideh
 - William Segree
