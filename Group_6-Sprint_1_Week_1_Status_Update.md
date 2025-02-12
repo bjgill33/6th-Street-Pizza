@@ -39,7 +39,7 @@
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
 1. Testers could not test until code was pushed to GitHub.
    + **status**: *resolved*, code to be tested has been pushed to main repo.
-3. Not all group members where available for group meetings.
+3. Not all group members were available for group meetings.
    + **status**: *resolved*, daily meeting have been recorded and Project Manager updates group's channel daily.  
 5. I have asked group members to provide Project Manager with short daily status reports.
    + **status**: *not resolved*, some group members are not sending daily status reports or responding to Project Manager's Teams Posts.     
