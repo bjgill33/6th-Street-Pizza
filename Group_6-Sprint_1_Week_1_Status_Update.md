@@ -31,12 +31,16 @@
     - Testing the Checkout/Payments System   
 
 ### Tasks Completed this week (by Name):
-1. {Short description of task completed [by Name]}  
-2. …  
+1. **Elham Jahandideh** - Created database with *Django* to store user (customer) information (email, address, name, etc.)  
+2. **Arthur Holmes** - Created Web Landing page using Bootstrap Theming    
 3. …  
-*Note: Add entries as needed*
+
 
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
-1. {Short description of issue – status: resolved/not resolved}  
-2. …  
-*Note: Add entries as needed*
+1. Testers could not test until code was pushed to GitHub.
+   + **status**: *resolved*, code to be tested has been pushed to main repo.
+3. Not all group members where available for group meetings.
+   + **status**: *resolved*, daily meeting have been recorded and Project Manager updates group's channel daily.  
+5. I have asked group members to provide Project Manager with short daily status reports.
+   + **status**: *not resolved*, some group members are not sending daily status reports or responding to Project Manager's Teams Posts.     
+
