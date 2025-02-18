@@ -1,4 +1,4 @@
-# Cloning the Repository for Coding anfd Testing in VS Code IDE
+# Cloning the Repository for Coding and Testing in VS Code IDE
 
 ## Preparation
 ### Create a new folder
