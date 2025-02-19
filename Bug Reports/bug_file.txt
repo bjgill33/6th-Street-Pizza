@@ -1,0 +1,1 @@
+This is .txt file for the bug report folder (directory). 
