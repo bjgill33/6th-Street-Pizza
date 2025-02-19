@@ -37,9 +37,11 @@
 1. **Alexander Bass:** Create Documentation for Django Environment (Markdown files .md).
 2. **Brian Gill:** Create Code documentation and Clone repo tutorial.
 3. **Arthur Holmes:** Create Tech Stack documentation flowchart.
+4. **Arthur Holmes:** Create web page menu
+5. **Arthur Holmes:** Create options for user to edit, delete, and complete ordering
+6. **Elham Jahandideh:** Updated database schema
+7. **William SeGree:** Create Payments page 
     
- 
-
-
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
+1. The biggest challenge for the group was ensuring everyone was available for meetings
  
