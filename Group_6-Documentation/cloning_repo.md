@@ -43,7 +43,9 @@ I named my folder "example_folder" for this tutorial.
 5. It is ***highly recommended*** that the **CODEIUM** extention should be downloaded and installed for VS Code.  It is a great A.I. copilot that can assist in coding, testing, and documentation.
 ![Coding and Testing 4](https://github.com/bjgill33/6th-Street-Pizza/blob/gill-working_branch/Group_6-Documentation/images_for_cloning_repo/VSCode_clone_repo_CODEIUM_extention.png)
 
-# End Tutorial
+## End Tutorial
+
+
 
 
 
