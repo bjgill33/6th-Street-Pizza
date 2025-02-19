@@ -12,7 +12,7 @@ Reporting bugs on GitHub is an important part of maintaining and improving a pro
 - Before creating a new issue, search existing issues to see if the bug has already been reported.
 - If a similar issue exists, consider adding a comment instead of opening a duplicate issue.
 
-![Bug Report 1](https://github.com/bjgill33/6th-Street-Pizza/blob/gill-working_branch/Bug%20Reports/bug_report_images/bug_report_1.png)
+![Bug Report 1](https://github.com/bjgill33/6th-Street-Pizza/blob/main/Bug%20Reports/bug_report_images/bug_report_1.png)
 
 ### 3. Click "New Issue"
 - Click the **"New Issue"** button to start a new bug report.
@@ -21,13 +21,13 @@ Reporting bugs on GitHub is an important part of maintaining and improving a pro
 - Some repositories provide issue templates that guide you through reporting a bug. Choose the **"Bug Report"** template if available.
 - If no template exists, use the general issue form.
 
-![Bug Report 2](https://github.com/bjgill33/6th-Street-Pizza/blob/gill-working_branch/Bug%20Reports/bug_report_images/bug_report_2.png)
+![Bug Report 2](https://github.com/bjgill33/6th-Street-Pizza/blob/main/Bug%20Reports/bug_report_images/bug_report_2.png)
 
 #### List of Issues Labels
-![Bug Report 3](https://github.com/bjgill33/6th-Street-Pizza/blob/gill-working_branch/Bug%20Reports/bug_report_images/bug_report_3.png)
+![Bug Report 3](https://github.com/bjgill33/6th-Street-Pizza/blob/main/Bug%20Reports/bug_report_images/bug_report_3.png)
 
 #### You can create custom labels if needed
-![Bug Report 4](https://github.com/bjgill33/6th-Street-Pizza/blob/gill-working_branch/Bug%20Reports/bug_report_images/bug_report_4.png)
+![Bug Report 4](https://github.com/bjgill33/6th-Street-Pizza/blob/main/Bug%20Reports/bug_report_images/bug_report_4.png)
 
 ### 5. Provide a Clear Title
 - Your title should be concise and descriptive.  
