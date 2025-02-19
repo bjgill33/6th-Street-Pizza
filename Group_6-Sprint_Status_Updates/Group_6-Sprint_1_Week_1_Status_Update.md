@@ -33,7 +33,7 @@
 ### Tasks Completed this week (by Name):
 1. **Elham Jahandideh** - Created database with *Django* to store user (customer) information (email, address, name, etc.)  
 2. **Arthur Holmes** - Created Web Landing page using Bootstrap Theming    
-3. …  
+  
 
 
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
