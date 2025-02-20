@@ -1,328 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>6th Street Pizza</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-   <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>6th Street Pizza</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+            rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+        <script
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3y0aTpDcrzntE4cyPhDLKvHTHC76uN64&callback=initMaps"
+            async defer></script>
+        <link rel="icon" type="image/png" href="logo/favicon.png">
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand" href="index.html"><img src="logo/6th_street_pizza.png"></a>
+    </head>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Locations</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Coupons</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Rewards</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Tracker</a></li>
-                <li class="nav-item position-relative">
-                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
-                        <i class="bi bi-cart text-white" style="font-size: 1.5rem;"></i>
-                        <span class="cart-badge">0</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+    <body>
 
-<!-- End Nav --->
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="index.html"><img
+                        src="logo/6th_street_pizza.png" alt="6th Street Pizza Logo"></a>
 
-
-<section class="container my-4">
-    <h1 class="text-center mb-4">Menu</h1>
-    <div class="row justify-content-center mb-4">
-        <!-- Dropdown Button -->
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="menuFilter" data-bs-toggle="dropdown" aria-expanded="false">
-                Filter Menu
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="menuFilter">
-                <li><a class="dropdown-item" href="#" onclick="filterMenu('all')">All</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterMenu('pizza')">Pizza</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterMenu('wings')">Wings</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterMenu('dessert')">Dessert</a></li>
-                <li><a class="dropdown-item" href="#" onclick="filterMenu('drinks')">Drinks</a></li>
-            </ul>
-        </div>
-        <!-- End Dropdown Button -->
-    </div>
-
-    <div class="row justify-content-center" id="menuItems">
-        <!-- Pizza Cards -->
-        <div class="col-md-4 mb-4 pizza">
-            <div class="card order-card" style="height: 250px; background-image: url('close-up-hand-taking-slice-of-fresh-cheese-pizza-w-2023-12-19-07-00-13-utc.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Margherita Pizza $9.99</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link"
+                                href="menu.html">Menu</a></li>
+                        <li class="nav-item"><a class="nav-link"
+                                href="#">Locations</a></li>
+                        <li class="nav-item"><a class="nav-link"
+                                href="#">Coupons</a></li>
+                        <li class="nav-item"><a class="nav-link"
+                                href="#">Rewards</a></li>
+                        <li class="nav-item"><a class="nav-link"
+                                href="#">Tracker</a></li>
+                        <li class="nav-item position-relative">
+                            <a class="nav-link" href="#" data-bs-toggle="modal"
+                                data-bs-target="#cartModal">
+                                <i class="bi bi-cart text-white"
+                                    style="font-size: 1.5rem;"></i>
+                                <span id="cartBadge" class="cart-badge">0</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4 mb-4 pizza">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">BBQ Chicken Pizza $10.49</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
+        </nav>
+
+        <!-- End Nav -->
+
+        <section class="container my-4">
+            <h1 class="text-center mb-4">Menu</h1>
+            <div class="row justify-content-center mb-4">
+                <!-- Dropdown Button -->
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle"
+                        type="button" id="menuFilter"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Filter Menu
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="menuFilter">
+                        <li><a class="dropdown-item" href="#"
+                                onclick="filterMenu('all')">All</a></li>
+                        <li><a class="dropdown-item" href="#"
+                                onclick="filterMenu('pizza')">Pizza</a></li>
+                        <li><a class="dropdown-item" href="#"
+                                onclick="filterMenu('wings')">Wings</a></li>
+                        <li><a class="dropdown-item" href="#"
+                                onclick="filterMenu('dessert')">Dessert</a></li>
+                        <li><a class="dropdown-item" href="#"
+                                onclick="filterMenu('drinks')">Drinks</a></li>
+                    </ul>
+                </div>
+                <!-- End Dropdown Button -->
+            </div>
+
+            <div class="row justify-content-center" id="menuItems">
+                <!-- Pizza Cards -->
+                <div class="col-md-4 mb-4 pizza">
+                    <div id="pepperoni_pizza" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/Pepperoni_Pizza.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title pizza">Pepperoni
+                                Pizza $9.99</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="pizza"
+                                name="Pepperoni Pizza $9.99">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 pizza">
+                    <div id="cheese_pizza" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/Cheese_Pizza.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title pizza">Cheese
+                                Pizza $9.99</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="pizza"
+                                name="Cheese Pizza $9.99">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 pizza">
+                    <div id="veggie_pizza" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/Veggie_Pizza.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title pizza">Veggie
+                                Pizza $9.99</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="pizza"
+                                name="Veggie Pizza $9.99">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wings Cards -->
+                <div class="col-md-4 mb-4 wings">
+                    <div id="buffalo_wings" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/Buffalo_Wings.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title chicken">6
+                                Piece Buffalo Wings $9.49</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="chicken"
+                                name="6 Piece Buffalo Wings $9.49">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 wings">
+                    <div id="bbq_wings" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/BBQ_Wings.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title chicken">6
+                                Piece BBQ Wings $9.49</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="chicken"
+                                name="6 Piece BBQ Wings $9.49">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 wings">
+                    <div id="hot_wings" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/Hot_Wings.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title chicken">6
+                                Piece Hot Wings $9.49</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="chicken"
+                                name="6 Piece Hot Wings $9.49">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dessert Cards -->
+                <div class="col-md-4 mb-4 dessert">
+                    <div id="lava_cake" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/Chocolate_Cake_Slice.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title dessert">6
+                                Chocolate Lava Cake Slice $5.99</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="dessert"
+                                name="6 Chocolate Lava Cake Slice $5.99">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 dessert">
+                    <div id="chocolate_chip_cookies" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/Chocolate_Chip_Cookies.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title dessert">6
+                                Chocolate Chip Cookies $4.99</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="dessert"
+                                name="6 Chocolate Chip Cookies $4.99">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 dessert">
+                    <div id="vanilla_milkshake" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/Vanilla_Milkshake.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title dessert">Vanilla
+                                Milkshake $6.49</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="dessert"
+                                name="Vanilla Milkshake $6.49">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drinks Cards -->
+                <div class="col-md-4 mb-4 drinks">
+                    <div id="coke" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/DRINKS_COKE.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title drink">Soda
+                                2 Liter Coca-Cola $3.99</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="drink"
+                                name="Soda 2 Liter Coca-Cola $3.99">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 drinks">
+                    <div id="sprite" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/DRINKS_SPRITE.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title drink">2
+                                Liter Sprite $3.99</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="drink"
+                                name="2 Liter Sprite $3.99">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 drinks">
+                    <div id="water" class="card order-card"
+                        style="height: 250px; background-image: url('menu_images/DRINKS_WATER.jpg'); background-size: cover; background-position: center;">
+                        <div
+                            class="card-body d-flex flex-column justify-content-center text-white">
+                            <h5
+                                class="card-title text-center menu_title drink">16
+                                oz Dasani® Bottle Water $2.99</h5>
+                            <a href="#"
+                                class="btn btn-primary btn-sm mt-2">Order
+                                Now</a>
+                            <input type="hidden" value="drink"
+                                name="16 oz Dasani® Bottle Water $2.99">
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4 mb-4 pizza">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Veggie Supreme Pizza $11.99</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
+        </section>
+            <!-- Footer -->
+            <footer class="footer bg-dark text-white py-4">
+                <div class="container text-center">
+                    <p>&copy; 2025 Pizza Company. All Rights Reserved.</p>
                 </div>
-            </div>
-        </div>
+            </footer>
 
-        <!-- Wings Cards -->
-        <div class="col-md-4 mb-4 wings">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Buffalo Wings $8.99</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
+            <!-- Footer -->
+            <footer class="footer bg-dark text-white py-4">
+                <div class="container">
+                    <div class="row text-center">
+                        <!-- Column 1 -->
+                        <div class="col-md-3">
+                            <h5>Company</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="text-white">About
+                                        Us</a></li>
+                                <li><a href="#"
+                                        class="text-white">Careers</a></li>
+                                <li><a href="#"
+                                        class="text-white">Press</a></li>
+                                <li><a href="#" class="text-white">Blog</a></li>
+                            </ul>
+                        </div>
+                        <!-- Column 2 -->
+                        <div class="col-md-3">
+                            <h5>Services</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#"
+                                        class="text-white">Delivery</a></li>
+                                <li><a href="#"
+                                        class="text-white">Carryout</a></li>
+                                <li><a href="#"
+                                        class="text-white">Catering</a></li>
+                                <li><a href="#"
+                                        class="text-white">Rewards</a></li>
+                            </ul>
+                        </div>
+                        <!-- Column 3 -->
+                        <div class="col-md-3">
+                            <h5>Support</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="text-white">Help
+                                        Center</a></li>
+                                <li><a href="#" class="text-white">Order
+                                        Tracking</a></li>
+                                <li><a href="#" class="text-white">FAQs</a></li>
+                                <li><a href="#" class="text-white">Contact
+                                        Us</a></li>
+                            </ul>
+                        </div>
+                        <!-- Column 4 -->
+                        <div class="col-md-3">
+                            <h5>Social</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#"
+                                        class="text-white">Facebook</a></li>
+                                <li><a href="#"
+                                        class="text-white">Twitter</a></li>
+                                <li><a href="#"
+                                        class="text-white">Instagram</a></li>
+                                <li><a href="#"
+                                        class="text-white">YouTube</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <p>&copy; 2025 Your Pizza Company Name. All Rights
+                            Reserved.</p>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4 wings">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Honey BBQ Wings $9.49</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
+            </footer>
+
+            <!-- Terms and Conditions Section -->
+            <section class="terms-section bg-primary text-white py-5">
+                <div class="container">
+                    <p class="lead">
+                        You must ask for this offer while available. Offer is
+                        available only at participating stores.
+                        Prices, delivery area, and charges may vary by store.
+                        Delivery orders are subject to each local
+                        store's delivery charge. 2-item minimum. Bone-in Wings,
+                        Bread Bowl Pasta, and Handmade Pan Pizza
+                        will cost extra. In addition, your local store may
+                        charge extra for some menu items available with
+                        this offer and some crust types, toppings, and sauces.
+                        Visit www.dominos.com to see your local
+                        store's online menu and the checkout page when placing
+                        an online order for order-specific pricing.
+                    </p>
+                    <p class="lead">
+                        Carryout only. You must ask for this limited time offer.
+                        Prices, participation and charges may vary.
+                        Size availability varies by crust type. Excludes XL and
+                        Specialty pizzas. In addition, your local
+                        store may charge extra for some toppings and sauces.
+                    </p>
+                    <p class="lead">
+                        Any Delivery Charge is not a tip paid to your driver.
+                        Please reward your driver for awesomeness.
+                        Drivers carry less than $20. Minimum purchase required
+                        for delivery. Delivery charge and tax may
+                        apply. Prices, participation, delivery area and charges
+                        may vary. Returned checks, along with the
+                        state's maximum allowable returned check fee, may be
+                        electronically presented to your bank. ©2024
+                        Domino's IP Holder LLC. Domino's®, Domino's Pizza® and
+                        the game piece logo are registered trademarks
+                        of Domino's IP Holder LLC. "Coca-Cola" and the Contour
+                        Bottle design are registered trademarks of
+                        The Coca-Cola Company. Apple, the Apple logo and iPad
+                        are trademarks of Apple Inc., registered in
+                        the U.S. and other countries. App Store is a service
+                        mark of Apple Inc. Android is a trademark of
+                        Google Inc. Windows® Phone is a registered trademark of
+                        the Microsoft group of companies.
+                    </p>
+                    <p class="lead">
+                        <strong>CA Transparency in Supply Chains Act
+                            Disclosure</strong>
+                    </p>
+                    <p class="lead">
+                        <strong>CA Consumer Privacy Act</strong>
+                    </p>
+                    <p class="lead">
+                        Learn more about our Accessibility Policy.
+                    </p>
+                    <p class="lead">
+                        If you are using a screen reader and are having problems
+                        using this website, please call
+                        800-252-4031 for assistance.
+                    </p>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4 wings">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Spicy Garlic Wings $9.99</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
-                </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- Dessert Cards -->
-        <div class="col-md-4 mb-4 dessert">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Chocolate Lava Cake $5.99</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4 dessert">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Apple Pie $4.99</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4 dessert">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Cheesecake $6.49</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
-                </div>
-            </div>
-        </div>
+            <script src="js/cart.js"></script>
+            <script src="js/menuFilter.js"></script>
+            <script src="js/orderCustomizationModal.js"></script>
+            <script src="js/removeSmall.js"></script>
+            <script src="js/shoppingCartModal.js"></script>
+            <script src="js/orderModal.js"></script>
+            <script src="js/locations.js"></script>
+            <script src="js/locationsModal.js"></script>
+            <script src="js/orderModalHandler.js"></script>
+            <script src="js/orderLogic.js"></script>
+            <script src="js/orderButtonHandler.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Drinks Cards -->
-        <div class="col-md-4 mb-4 drinks">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Lemonade $3.49</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4 drinks">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Iced Tea $2.99</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4 drinks">
-            <div class="card order-card" style="height: 250px; background-image: url('thumb-1920-199848-657103966.jpg'); background-size: cover; background-position: center;">
-                <div class="card-body d-flex flex-column justify-content-center text-white">
-                    <h5 class="card-title text-center">Soda $2.49</h5>
-                    <a href="#" class="btn btn-primary btn-sm mt-2">Order Now</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </body>
 
-
-
-
-
-
-
-
-<!-- Filter Food Items -->
-
-<script>
-    function filterMenu(category) {
-        const allCards = document.querySelectorAll('.pizza, .wings, .dessert, .drinks');
-
-        allCards.forEach(card => {
-            if (category === 'all') {
-                card.style.display = 'block';
-            } else if (card.classList.contains(category)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-</script>
-
-
-<!--- Filter End -->
-
-
-
-
-
-
-
-
-
-<!-- Add To Cart Modal -->
-<div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addToCartModalLabel">Select Your Pizza Options</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Cart options form goes here -->
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Footer -->
-<footer class="footer bg-dark text-white py-4">
-    <div class="container text-center">
-        <p>&copy; 2025 Pizza Company. All Rights Reserved.</p>
-    </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-
-<!-- Footer -->
-<footer class="footer bg-dark text-white py-4">
-    <div class="container">
-        <div class="row text-center">
-            <!-- Column 1 -->
-            <div class="col-md-3">
-                <h5>Company</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#" class="text-white">About Us</a></li>
-                    <li><a href="#" class="text-white">Careers</a></li>
-                    <li><a href="#" class="text-white">Press</a></li>
-                    <li><a href="#" class="text-white">Blog</a></li>
-                </ul>
-            </div>
-            <!-- Column 2 -->
-            <div class="col-md-3">
-                <h5>Services</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#" class="text-white">Delivery</a></li>
-                    <li><a href="#" class="text-white">Carryout</a></li>
-                    <li><a href="#" class="text-white">Catering</a></li>
-                    <li><a href="#" class="text-white">Rewards</a></li>
-                </ul>
-            </div>
-            <!-- Column 3 -->
-            <div class="col-md-3">
-                <h5>Support</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#" class="text-white">Help Center</a></li>
-                    <li><a href="#" class="text-white">Order Tracking</a></li>
-                    <li><a href="#" class="text-white">FAQs</a></li>
-                    <li><a href="#" class="text-white">Contact Us</a></li>
-                </ul>
-            </div>
-            <!-- Column 4 -->
-            <div class="col-md-3">
-                <h5>Social</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#" class="text-white">Facebook</a></li>
-                    <li><a href="#" class="text-white">Twitter</a></li>
-                    <li><a href="#" class="text-white">Instagram</a></li>
-                    <li><a href="#" class="text-white">YouTube</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="text-center mt-4">
-            <p>&copy; 2025 Your Pizza Company Name. All Rights Reserved.</p>
-        </div>
-    </div>
-</footer>
-
-
-
-
-<!-- Terms and Conditions Section -->
-<section class="terms-section bg-primary text-white py-5">
-    <div class="container">
-        <p class="lead">
-            You must ask for this offer while available. Offer is available only at participating stores. Prices, delivery area, and charges may vary by store. Delivery orders are subject to each local store's delivery charge. 2-item minimum. Bone-in Wings, Bread Bowl Pasta, and Handmade Pan Pizza will cost extra. In addition, your local store may charge extra for some menu items available with this offer and some crust types, toppings, and sauces. Visit www.dominos.com to see your local store's online menu and the checkout page when placing an online order for order-specific pricing.
-        </p>
-        <p class="lead">
-            Carryout only. You must ask for this limited time offer. Prices, participation and charges may vary. Size availability varies by crust type. Excludes XL and Specialty pizzas. In addition, your local store may charge extra for some toppings and sauces.
-        </p>
-        <p class="lead">
-            Any Delivery Charge is not a tip paid to your driver. Please reward your driver for awesomeness. Drivers carry less than $20. Minimum purchase required for delivery. Delivery charge and tax may apply. Prices, participation, delivery area and charges may vary. Returned checks, along with the state's maximum allowable returned check fee, may be electronically presented to your bank. ©2024 Domino's IP Holder LLC. Domino's®, Domino's Pizza® and the game piece logo are registered trademarks of Domino's IP Holder LLC. "Coca-Cola" and the Contour Bottle design are registered trademarks of The Coca-Cola Company. Apple, the Apple logo and iPad are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc. Android is a trademark of Google Inc. Windows® Phone is a registered trademark of the Microsoft group of companies.
-        </p>
-        <p class="lead">
-            <strong>CA Transparency in Supply Chains Act Disclosure</strong>
-        </p>
-        <p class="lead">
-            <strong>CA Consumer Privacy Act</strong>
-        </p>
-        <p class="lead">
-            Learn more about our Accessibility Policy.
-        </p>
-        <p class="lead">
-            If you are using a screen reader and are having problems using this website, please call 800-252-4031 for assistance.
-        </p>
-    </div>
-</section>
-<!-- Shopping Cart Modal -->
-<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cartModalLabel">Your Shopping Cart</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Your cart is currently empty.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" onclick="window.location.href='payment.html'" class="btn btn-primary">Checkout</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-</body>
 </html>
 

@@ -1,51 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Secure Checkout - 6th Street Pizza</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="style.css"/>
+    <link rel="icon" type="image/png" href="logo/favicon.png"/>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3y0aTpDcrzntE4cyPhDLKvHTHC76uN64&callback=initMaps" async
+      defer
+    ></script>
     <script src="js/pay_validation.js" async></script>
+    <script>
+      function initMaps() {
+        console.log("Google Maps initialized");
+      }
+    </script>
+
   </head>
 
   <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
       <div class="container">
-        <a class="navbar-brand" href="index.html"
-          ><img src="logo/6th_street_pizza.png"
-        /></a>
+      <a class="navbar-brand" href="index.html"><img src="logo/6th_street_pizza.png" alt="6th Street Pizza Logo"/></a>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="menu.html">Menu</a>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="#">Locations</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Coupons</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Rewards</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Tracker</a></li>
-            <li class="nav-item position-relative">
-              <a
-                class="nav-link"
-                href="#"
-                data-bs-toggle="modal"
-                data-bs-target="#cartModal"
-              >
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Locations</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Coupons</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Rewards</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Tracker</a></li>
+          <li class="nav-item position-relative"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
                 <i class="bi bi-cart text-white" style="font-size: 1.5rem"></i>
-                <span class="cart-badge">0</span>
-              </a>
-            </li>
-          </ul>
-        </div>
+                <span id="cartBadge" class="cart-badge">0</span></a>
+          </li>
+        </ul>
+      </div>
       </div>
     </nav>
 
@@ -55,15 +49,15 @@
         <h2 class="text-center mb-4">Secure Checkout</h2>
         <div class="row">
           <!-- Order Review -->
+
+          <!-- Order Review -->
           <div class="col-md-4">
             <h4>Review Your Order</h4>
             <div class="card p-3 mb-3">
-              <p><strong>Item:</strong> Large Pepperoni Pizza</p>
-              <p><strong>Price:</strong> $12.99</p>
-              <p><strong>Qty:</strong> 1</p>
-              <p><strong>Subtotal:</strong> $12.99</p>
-              <p><strong>Delivery:</strong> Free (5-10 business days)</p>
-              <p><strong>Tax:</strong> $1.04</p>
+              <div id="orderReviewItems"></div>
+              <!-- Cart items will be inserted here -->
+              <p class="mt-3"><strong>Total:</strong> <span id="orderTotal">$0.00</span></p>
+
               <div class="d-flex gap-3">
                 <button
                   class="btn btn-secondary"
@@ -77,89 +71,146 @@
             </div>
           </div>
 
+
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              let cart = JSON.parse(localStorage.getItem("cart")) || [];
+              const cartContainer = document.getElementById("orderReviewItems");
+              const cartTotalElement = document.getElementById("orderTotal");
+
+              cartContainer.innerHTML = ""; // Clear previous content
+              let totalCartPrice = 0;
+
+              if (cart.length === 0) {
+                cartContainer.innerHTML = "<p class='text-muted'>Your cart is empty.</p>";
+                cartTotalElement.textContent = "$0.00";
+                return;
+              }
+
+              cart.forEach((item) => {
+                totalCartPrice += parseFloat(item.price);
+
+                // Create item row
+                const cartItemHTML = `
+        <div class="d-flex align-items-center justify-content-between border-bottom py-2">
+            <img src="${item.icon}" alt="${
+                  item.name
+                }" style="width: 50px; height: 50px; object-fit: contain;">
+            <div class="ms-2">
+                <strong>${item.name} (${item.size})</strong><br>
+                <small>Qty: ${item.quantity} | ${
+                  item.toppings.length
+                    ? "Toppings: " + item.toppings.join(", ")
+                    : "No extra toppings"
+                }</small>
+                <br><strong>Price: $${item.price}</strong>
+            </div>
+        </div>
+      `;
+                cartContainer.innerHTML += cartItemHTML;
+              });
+
+              // Update total price
+              cartTotalElement.textContent = `$${totalCartPrice.toFixed(2)}`;
+            });
+          </script>
+
           <!-- Delivery Address -->
           <div class="col-md-4">
             <h4>Delivery Address</h4>
-            <form
-              id="deliveryAddressForm"
-              onsubmit="return validateAddressForm()"
-            >
+            <form>
+
               <div class="mb-3">
                 <label class="form-label">Email Address</label>
                 <input
                   type="email"
                   id="email"
+
+                  name="email"
+
                   class="form-control"
                   placeholder="example@example.com"
                   required
                 />
-                <span id="emailError"></span>
+
+
               </div>
               <div class="mb-3">
                 <label class="form-label">Full Name</label>
                 <input
                   type="text"
                   id="fullName"
+
+                  name="fullName"
                   class="form-control"
                   placeholder="John Doe"
                   required
-                  maxlength="35"
                 />
-                <span id="fullNameError"></span>
+
               </div>
               <div class="mb-3">
                 <label class="form-label">Phone Number</label>
                 <input
                   type="tel"
                   id="phone"
+                  name="phone"
                   class="form-control"
                   placeholder="123-456-7890"
-                  required
-                />
-                <span id="phoneError"></span>
+                  required/>
               </div>
               <div class="mb-3">
                 <label class="form-label">Address</label>
                 <input
                   type="text"
                   id="address"
+
+                  name="address"
+
                   class="form-control"
                   placeholder="123 Main St, Apt 4B"
                   required
                 />
-                <span id="addressError"></span>
+
+
               </div>
               <div class="mb-3">
                 <label class="form-label">City</label>
                 <input
                   type="text"
                   id="city"
+
+                  name="city"
+
                   class="form-control"
                   placeholder="Los Angeles"
                   required
                 />
-                <span id="cityError"></span>
+
               </div>
               <div class="mb-3">
                 <label class="form-label">State</label>
-                <select id="state" class="form-select" required>
+                <select id="state" name="state" class="form-select" required>
                   <option value="">Choose your state...</option>
-                  <option value="California">California</option>
-                  <option value="Texas">Texas</option>
-                  <option value="Florida">Florida</option>
+                  <option>California</option>
+                  <option>Texas</option>
+                  <option>Florida</option>
                 </select>
-                <span id="stateError"></span>
+
               </div>
               <div class="mb-3">
                 <label class="form-label">Zip Code</label>
                 <input
                   type="text"
                   id="zip"
+
+                  name="zip"
+
                   class="form-control"
                   placeholder="90210"
                   required
                 />
-                <span id="zipError"></span>
+
+
               </div>
             </form>
           </div>
@@ -167,40 +218,50 @@
           <!-- Payment Details -->
           <div class="col-md-4">
             <h4>Payment Details</h4>
-            <form id="paymentForm" onsubmit="return validateCheckoutForm()">
+
+            <form>
               <div class="mb-3">
                 <label class="form-label">Card Number</label>
                 <input
-                  type="text"
+                  type="tel"
                   id="cardNumber"
+                  name="cardNumber"
                   class="form-control"
                   placeholder="1234 5678 9012 3456"
+                  pattern="[0-9\s]{13,19}"
                   maxlength="19"
+                  required
                 />
-                <span id="cardNumberError"></span>
+
               </div>
               <div class="mb-3">
                 <label class="form-label">Expiration Date</label>
                 <input
                   type="text"
                   id="expiryDate"
+
+                  name="expiryDate"
                   class="form-control"
                   placeholder="MM/YY"
-                />
-                <span id="expiryDateError"></span>
+                  pattern="(0[1-9]|1[0-2])\/\d{2}"
+                  required/>
+
               </div>
               <div class="mb-3">
                 <label class="form-label">CVV</label>
                 <input
                   type="text"
                   id="cvv"
+
+                  name="cvv"
                   class="form-control"
                   placeholder="123"
-                  maxlength="3"
+                  pattern="[0-9]{3,4}"
+                  required
                 />
-                <span id="cvvError"></span>
               </div>
-              <button class="btn btn-primary w-100">Pay Now</button>
+              <button type="submit" class="btn btn-primary w-100">Pay Now</button>
+
               <div>
                 <img
                   class="pt-4 d-block mx-auto img-fluid"
@@ -214,54 +275,23 @@
       </div>
     </section>
 
-    <!-- Cart Modal -->
-    <div
-      class="modal fade"
-      id="cartModal"
-      tabindex="-1"
-      aria-labelledby="cartModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="cartModalLabel">Your Shopping Cart</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <p>Your cart is currently empty.</p>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              onclick="window.location.href='payment.html'"
-              class="btn btn-primary"
-            >
-              Checkout
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <footer class="footer bg-dark text-white py-4 mt-5">
       <div class="container text-center">
-        <p>&copy; 2025 Your Pizza Company Name. All Rights Reserved.</p>
+        <p>&copy; 2025 6th Street Pizza. All Rights Reserved.</p>
       </div>
     </footer>
 
+    <script src="js/cart.js"></script>
+    <script src="js/orderCustomizationModal.js"></script>
+    <script src="js/removeSmall.js"></script>
+    <script src="js/locations.js"></script>
+    <script src="js/locationsModal.js"></script>
+    <script src="js/shoppingCartModal.js"></script>
+    <script src="js/orderModal.js"></script>
+    <script src="js/orderModalHandler.js"></script>
+    <script src="js/orderLogic.js"></script>
+    <script src="js/orderButtonHandler.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
