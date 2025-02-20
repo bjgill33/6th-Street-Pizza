@@ -13,13 +13,29 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
+<<<<<<< HEAD
     <script src="js/pay_validation.js" async></script>
+=======
+    <link rel="icon" type="image/png" href="logo/favicon.png" />
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3y0aTpDcrzntE4cyPhDLKvHTHC76uN64&callback=initMaps"
+      async
+      defer
+    ></script>
+    <script src="js/pay_validation.js" async></script>
+    <script>
+      function initMaps() {
+        console.log("Google Maps initialized");
+      }
+    </script>
+>>>>>>> origin/master
   </head>
 
   <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
       <div class="container">
+<<<<<<< HEAD
         <a class="navbar-brand" href="index.html"
           ><img src="logo/6th_street_pizza.png"
         /></a>
@@ -29,11 +45,19 @@
             <li class="nav-item">
               <a class="nav-link" href="menu.html">Menu</a>
             </li>
+=======
+        <a class="navbar-brand" href="index.html"><img src="logo/6th_street_pizza.png" /></a>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+>>>>>>> origin/master
             <li class="nav-item"><a class="nav-link" href="#">Locations</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Coupons</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Rewards</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Tracker</a></li>
             <li class="nav-item position-relative">
+<<<<<<< HEAD
               <a
                 class="nav-link"
                 href="#"
@@ -42,6 +66,11 @@
               >
                 <i class="bi bi-cart text-white" style="font-size: 1.5rem"></i>
                 <span class="cart-badge">0</span>
+=======
+              <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
+                <i class="bi bi-cart text-white" style="font-size: 1.5rem"></i>
+                <span id="cartBadge" class="cart-badge">0</span>
+>>>>>>> origin/master
               </a>
             </li>
           </ul>
@@ -55,6 +84,7 @@
         <h2 class="text-center mb-4">Secure Checkout</h2>
         <div class="row">
           <!-- Order Review -->
+<<<<<<< HEAD
           <div class="col-md-4">
             <h4>Review Your Order</h4>
             <div class="card p-3 mb-3">
@@ -64,6 +94,15 @@
               <p><strong>Subtotal:</strong> $12.99</p>
               <p><strong>Delivery:</strong> Free (5-10 business days)</p>
               <p><strong>Tax:</strong> $1.04</p>
+=======
+          <!-- Order Review -->
+          <div class="col-md-4">
+            <h4>Review Your Order</h4>
+            <div class="card p-3 mb-3">
+              <div id="orderReviewItems"></div>
+              <!-- Cart items will be inserted here -->
+              <p class="mt-3"><strong>Total:</strong> <span id="orderTotal">$0.00</span></p>
+>>>>>>> origin/master
               <div class="d-flex gap-3">
                 <button
                   class="btn btn-secondary"
@@ -77,6 +116,7 @@
             </div>
           </div>
 
+<<<<<<< HEAD
           <!-- Delivery Address -->
           <div class="col-md-4">
             <h4>Delivery Address</h4>
@@ -84,60 +124,143 @@
               id="deliveryAddressForm"
               onsubmit="return validateAddressForm()"
             >
+=======
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              let cart = JSON.parse(localStorage.getItem("cart")) || [];
+              const cartContainer = document.getElementById("orderReviewItems");
+              const cartTotalElement = document.getElementById("orderTotal");
+
+              cartContainer.innerHTML = ""; // Clear previous content
+              let totalCartPrice = 0;
+
+              if (cart.length === 0) {
+                cartContainer.innerHTML = "<p class='text-muted'>Your cart is empty.</p>";
+                cartTotalElement.textContent = "$0.00";
+                return;
+              }
+
+              cart.forEach((item) => {
+                totalCartPrice += parseFloat(item.price);
+
+                // Create item row
+                const cartItemHTML = `
+        <div class="d-flex align-items-center justify-content-between border-bottom py-2">
+            <img src="${item.icon}" alt="${
+                  item.name
+                }" style="width: 50px; height: 50px; object-fit: contain;">
+            <div class="ms-2">
+                <strong>${item.name} (${item.size})</strong><br>
+                <small>Qty: ${item.quantity} | ${
+                  item.toppings.length
+                    ? "Toppings: " + item.toppings.join(", ")
+                    : "No extra toppings"
+                }</small>
+                <br><strong>Price: $${item.price}</strong>
+            </div>
+        </div>
+      `;
+                cartContainer.innerHTML += cartItemHTML;
+              });
+
+              // Update total price
+              cartTotalElement.textContent = `$${totalCartPrice.toFixed(2)}`;
+            });
+          </script>
+
+          <!-- Delivery Address -->
+          <div class="col-md-4">
+            <h4>Delivery Address</h4>
+            <form>
+>>>>>>> origin/master
               <div class="mb-3">
                 <label class="form-label">Email Address</label>
                 <input
                   type="email"
                   id="email"
+<<<<<<< HEAD
+=======
+                  name="email"
+>>>>>>> origin/master
                   class="form-control"
                   placeholder="example@example.com"
                   required
                 />
+<<<<<<< HEAD
                 <span id="emailError"></span>
+=======
+>>>>>>> origin/master
               </div>
               <div class="mb-3">
                 <label class="form-label">Full Name</label>
                 <input
                   type="text"
                   id="fullName"
+<<<<<<< HEAD
                   class="form-control"
                   placeholder="John Doe"
                   required
                   maxlength="35"
                 />
                 <span id="fullNameError"></span>
+=======
+                  name="fullName"
+                  class="form-control"
+                  placeholder="John Doe"
+                  required
+                />
+>>>>>>> origin/master
               </div>
               <div class="mb-3">
                 <label class="form-label">Phone Number</label>
                 <input
                   type="tel"
                   id="phone"
+<<<<<<< HEAD
+=======
+                  name="phone"
+>>>>>>> origin/master
                   class="form-control"
                   placeholder="123-456-7890"
                   required
                 />
+<<<<<<< HEAD
                 <span id="phoneError"></span>
+=======
+>>>>>>> origin/master
               </div>
               <div class="mb-3">
                 <label class="form-label">Address</label>
                 <input
                   type="text"
                   id="address"
+<<<<<<< HEAD
+=======
+                  name="address"
+>>>>>>> origin/master
                   class="form-control"
                   placeholder="123 Main St, Apt 4B"
                   required
                 />
+<<<<<<< HEAD
                 <span id="addressError"></span>
+=======
+>>>>>>> origin/master
               </div>
               <div class="mb-3">
                 <label class="form-label">City</label>
                 <input
                   type="text"
                   id="city"
+<<<<<<< HEAD
+=======
+                  name="city"
+>>>>>>> origin/master
                   class="form-control"
                   placeholder="Los Angeles"
                   required
                 />
+<<<<<<< HEAD
                 <span id="cityError"></span>
               </div>
               <div class="mb-3">
@@ -149,17 +272,35 @@
                   <option value="Florida">Florida</option>
                 </select>
                 <span id="stateError"></span>
+=======
+              </div>
+              <div class="mb-3">
+                <label class="form-label">State</label>
+                <select id="state" name="state" class="form-select" required>
+                  <option value="">Choose your state...</option>
+                  <option>California</option>
+                  <option>Texas</option>
+                  <option>Florida</option>
+                </select>
+>>>>>>> origin/master
               </div>
               <div class="mb-3">
                 <label class="form-label">Zip Code</label>
                 <input
                   type="text"
                   id="zip"
+<<<<<<< HEAD
+=======
+                  name="zip"
+>>>>>>> origin/master
                   class="form-control"
                   placeholder="90210"
                   required
                 />
+<<<<<<< HEAD
                 <span id="zipError"></span>
+=======
+>>>>>>> origin/master
               </div>
             </form>
           </div>
@@ -167,6 +308,7 @@
           <!-- Payment Details -->
           <div class="col-md-4">
             <h4>Payment Details</h4>
+<<<<<<< HEAD
             <form id="paymentForm" onsubmit="return validateCheckoutForm()">
               <div class="mb-3">
                 <label class="form-label">Card Number</label>
@@ -178,22 +320,47 @@
                   maxlength="19"
                 />
                 <span id="cardNumberError"></span>
+=======
+            <form>
+              <div class="mb-3">
+                <label class="form-label">Card Number</label>
+                <input
+                  type="tel"
+                  id="cardNumber"
+                  name="cardNumber"
+                  class="form-control"
+                  placeholder="1234 5678 9012 3456"
+                  pattern="[0-9\s]{13,19}"
+                  maxlength="19"
+                  required
+                />
+>>>>>>> origin/master
               </div>
               <div class="mb-3">
                 <label class="form-label">Expiration Date</label>
                 <input
                   type="text"
                   id="expiryDate"
+<<<<<<< HEAD
                   class="form-control"
                   placeholder="MM/YY"
                 />
                 <span id="expiryDateError"></span>
+=======
+                  name="expiryDate"
+                  class="form-control"
+                  placeholder="MM/YY"
+                  pattern="(0[1-9]|1[0-2])\/\d{2}"
+                  required
+                />
+>>>>>>> origin/master
               </div>
               <div class="mb-3">
                 <label class="form-label">CVV</label>
                 <input
                   type="text"
                   id="cvv"
+<<<<<<< HEAD
                   class="form-control"
                   placeholder="123"
                   maxlength="3"
@@ -201,6 +368,16 @@
                 <span id="cvvError"></span>
               </div>
               <button class="btn btn-primary w-100">Pay Now</button>
+=======
+                  name="cvv"
+                  class="form-control"
+                  placeholder="123"
+                  pattern="[0-9]{3,4}"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Pay Now</button>
+>>>>>>> origin/master
               <div>
                 <img
                   class="pt-4 d-block mx-auto img-fluid"
@@ -214,6 +391,7 @@
       </div>
     </section>
 
+<<<<<<< HEAD
     <!-- Cart Modal -->
     <div
       class="modal fade"
@@ -262,6 +440,24 @@
       </div>
     </footer>
 
+=======
+    <footer class="footer bg-dark text-white py-4 mt-5">
+      <div class="container text-center">
+        <p>&copy; 2025 6th Street Pizza. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script src="js/cart.js"></script>
+    <script src="js/orderCustomizationModal.js"></script>
+    <script src="js/removeSmall.js"></script>
+    <script src="js/locations.js"></script>
+    <script src="js/locationsModal.js"></script>
+    <script src="js/shoppingCartModal.js"></script>
+    <script src="js/orderModal.js"></script>
+    <script src="js/orderModalHandler.js"></script>
+    <script src="js/orderLogic.js"></script>
+    <script src="js/orderButtonHandler.js"></script>
+>>>>>>> origin/master
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
