@@ -57,7 +57,7 @@
 
 ### Suggestions for Improvement
 1. **Cart Button**:
-   - Disable the "Checkout" button when the cart is empty to prevent confusion.
+   - <mark>Disable the "Checkout" button when the cart is empty to prevent confusion.</mark>
 2. **Delivery Button**:
    - Navigate the user to `menu.html` on click and collect delivery details during checkout.
 3. **6th Street Pizza Logo Button**:
