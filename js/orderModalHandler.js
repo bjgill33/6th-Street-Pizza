@@ -25,18 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // ✅ Close the modal window
       orderModalInstance.hide();
-
-      // ✅ Manually remove the lingering Bootstrap backdrop if necessary
-      setTimeout(() => {
-        document.body.classList.remove("modal-open"); // Enable scrolling again
-        let backdrop = document.querySelector(".modal-backdrop");
-
-        // ✅ Remove the modal backdrop if it still exists
-        // Buggy --- Will need to troubleshoot later
-        if (backdrop) {
-          backdrop.remove();
-        }
-      }, 300); // Wait 300ms before removing the backdrop
     });
   }
 });
