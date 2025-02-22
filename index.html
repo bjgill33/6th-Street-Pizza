@@ -1,548 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>6th Street Pizza</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
-            rel="stylesheet">
-    <link rel="icon" type="image/png" href="logo/favicon.png">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3y0aTpDcrzntE4cyPhDLKvHTHC76uN64&callback=initMaps"
-            async defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="logo/favicon.png" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3y0aTpDcrzntE4cyPhDLKvHTHC76uN64&callback=initMaps" async defer></script>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="index.html"><img src="logo/6th_street_pizza.png" /></a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Locations</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Coupons</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Rewards</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Tracker</a></li>
+            <li class="nav-item position-relative">
+              <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
+                <i class="bi bi-cart text-white" style="font-size: 1.5rem"></i>
+                <span id="cartBadge" class="cart-badge">0</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-</head>
-
-<body>
-
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg">
-            <div class="container">
-                <a class="navbar-brand" href="index.html"><img
-                        src="logo/6th_street_pizza.png" alt="6th Street Pizza Logo"></a>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link"
-                                href="menu.html">Menu</a></li>
-                        <li class="nav-item"><a class="nav-link"
-                                href="#">Locations</a></li>
-                        <li class="nav-item"><a class="nav-link"
-                                href="#">Coupons</a></li>
-                        <li class="nav-item"><a class="nav-link"
-                                href="#">Rewards</a></li>
-                        <li class="nav-item"><a class="nav-link"
-                                href="#">Tracker</a></li>
-                        <li class="nav-item position-relative">
-                            <a class="nav-link" href="#" data-bs-toggle="modal"
-                                data-bs-target="#cartModal">
-                                <i class="bi bi-cart text-white"
-                                    style="font-size: 1.5rem;"></i>
-                                <span id="cartBadge" class="cart-badge">0</span>
-
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+    <!-- Start Your Order Section -->
+    <section class="order-section">
+      <div class="container">
+        <div class="text-center mb-4">
+          <h1>Start Your Order</h1>
+          <div class="d-flex justify-content-center align-items-center mt-3">
+            <button class="btn btn-danger mx-2" data-bs-toggle="modal" data-bs-target="#deliveryModal">Delivery</button>
+            <span class="or-text">Or</span>
+            <button class="btn btn-secondary mx-2" data-bs-toggle="modal" data-bs-target="#locationModal">Carryout</button>
+          </div>
+        </div>
+        <div class="row">
+          <!-- Large 600x800 card on the left (col-md-8) -->
+          <div class="col-md-8">
+            <div id="veggie_pizza_and_coke" class="card order-card" style="height: 630px">
+              <img
+                src="images/fresh-pizza-with-broccoli-and-chicken-served-with-2023-11-27-04-49-56-utc.jpg"
+                alt="..."
+                style="height: 100%; width: 100%; object-fit: cover"
+              />
+              <h2 class="card-overlay-text d-inline text-start">Veggie Pizza With Large Pepsi $12.98</h2>
+              <a href="#" class="btn btn-primary btn-sm" style="position: absolute; bottom: 10px; right: 10px">Order Now</a>
+              <input type="hidden" value="pizza" name="Veggie Pizza $9.99" />
+              <input type="hidden" value="drink" name="Pepperoni Pizza $2.99" />
             </div>
-        </nav>
+          </div>
 
-        <!-- Start Your Order Section -->
-        <section class="order-section">
-            <div class="container">
-                <div class="text-center mb-4">
-                    <h1>Start Your Order</h1>
-                    <div
-                        class="d-flex justify-content-center align-items-center mt-3">
-                        <button class="btn btn-danger mx-2"
-                            data-bs-toggle="modal"
-                            data-bs-target="#deliveryModal">Delivery</button>
-                        <span class="or-text">Or</span>
-                        <button class="btn btn-secondary mx-2"
-                            data-bs-toggle="modal"
-                            data-bs-target="#locationModal">Carryout</button>
-                    </div>
-                </div>
+          <!-- Three 300x200 cards to the right of the large card (each col-md-4) -->
+          <div class="col-md-4">
+            <div id="pepperoni_pizza" class="card order-card" style="height: 200px; width: 300px">
+              <img src="images/pepperoni-pizza-with-sauces-2024-11-01-12-06-27-utc.jpg" alt="..." />
+              <h4 class="card-overlay-text d-inline text-start" style="font-size: 20px">Pepperoni Pizza $9.99</h4>
+              <a href="#" class="btn btn-primary btn-sm">Order Now</a>
+              <input type="hidden" value="pizza" name="Pepperoni Pizza $9.99" />
             </div>
-                <div class="row">
-                    <!-- Large 600x800 card on the left (col-md-8) -->
-                    <div class="col-md-8">
-                        <div id="veggie_pizza_and_coke" class="card order-card"
-                            style="height: 630px;">
-                            <img
-                                src="images/fresh-pizza-with-broccoli-and-chicken-served-with-2023-11-27-04-49-56-utc.jpg"
-                                alt="..."
-                                style="height: 100%; width: 100%; object-fit: cover;">
-                            <h2
-                                class="card-overlay-text d-inline text-start">Veggie
-                                Pizza With Large Pepsi $12.98</h2>
-                            <a href="#" class="btn btn-primary btn-sm"
-                                style="position: absolute; bottom: 10px; right: 10px;">Order
-                                Now</a>
-                            <input type="hidden" value="pizza"
-                                name="Veggie Pizza $9.99">
-                            <input type="hidden" value="drink"
-                                name="Pepperoni Pizza $2.99">
 
-                        </div>
-                    </div>
+            <div id="cheese_pizza_deal" class="card order-card" style="height: 200px; width: 300px">
+              <img src="images/pizza-four-types-of-cheese-mozzarella-blue-cheese-2024-08-14-03-31-32-utc.jpg" alt="..." />
+              <h3 class="card-overlay-text d-inline text-start" style="font-size: 20px">Cheese Pizza $9.99</h3>
+              <a href="#" class="btn btn-primary btn-sm">Order Now</a>
+              <input type="hidden" value="pizza" name="Cheese Pizza $9.99" />
+            </div>
+
+            <div id="chocolate_chip_cookies" class="card order-card" style="height: 200px; width: 300px">
+              <img src="menu_images/Chocolate_Chip_Cookies.jpg" alt="..." />
+              <h4 class="card-overlay-text d-inline text-start" style="font-size: 20px">Chocolate Chip Cookies $4.99</h4>
+              <a href="#" class="btn btn-primary btn-sm">Order Now</a>
+              <input type="hidden" value="dessert" name="6 Chocolate Chip Cookies $4.99" />
+            </div>
+          </div>
+
+          <!-- Two 430x200 cards in a row, centered and side by side -->
+          <div class="row justify-content-center mt-4">
+            <div class="col-auto">
+              <div class="d-flex justify-content-center gap-4">
+                <div id="bbq_wings_deal" class="card order-card" style="height: 200px; width: 430px">
+                  <img src="images/grilled-chicken-wings-2024-09-24-00-38-01-utc.jpg" alt="..." style="height: 100%; width: 100%; object-fit: cover" />
+                  <h4 class="card-overlay-text d-inline text-start chicken">BBQ Wings $9.49</h4>
+                  <input type="hidden" value="chicken" name="BBQ Wings $9.49" />
+                  <a href="#" class="btn btn-primary btn-sm" style="position: absolute; bottom: 10px; right: 10px">Order Now</a>
                 </div>
-                    <!-- Three 300x200 cards to the right of the large card (each col-md-4) -->
-                    <div class="col-md-4">
-
-                        <div id="pepperoni_pizza" class="card order-card"
-                            style="height: 200px; width: 300px">
-                            <img
-                                src="images/pepperoni-pizza-with-sauces-2024-11-01-12-06-27-utc.jpg"
-                                alt="...">
-                            <h4 class="card-overlay-text d-inline text-start"
-                                style="font-size: 20px;">Pepperoni Pizza
-                                $9.99</h4>
-                            <a href="#" class="btn btn-primary btn-sm">Order
-                                Now</a>
-                            <input type="hidden" value="pizza"
-                                name="Pepperoni Pizza $9.99">
-                        </div>
-
-                        <div id="cheese_pizza_deal" class="card order-card"
-                            style="height: 200px; width:300px">
-                            <img
-                                src="images/pizza-four-types-of-cheese-mozzarella-blue-cheese-2024-08-14-03-31-32-utc.jpg"
-                                alt="...">
-                            <h3 class="card-overlay-text d-inline text-start"
-                                style="font-size: 20px">Cheese Pizza
-                                $9.99</h3>
-                            <a href="#" class="btn btn-primary btn-sm">Order
-                                Now</a>
-                            <input type="hidden" value="pizza"
-                                name="Cheese Pizza $9.99">
-                        </div>
-
-                        <div id="chocolate_chip_cookies"
-                            class="card order-card"
-                            style="height: 200px; width:300px">
-                            <img src="menu_images/Chocolate_Chip_Cookies.jpg"
-                                alt="...">
-                            <h4 class="card-overlay-text d-inline text-start"
-                                style="font-size: 20px;">Chocolate Chip
-                                Cookies
-                                $4.99</h4>
-                            <a href="#" class="btn btn-primary btn-sm">Order
-                                Now</a>
-                            <input type="hidden" value="dessert"
-                                name="6 Chocolate Chip Cookies $4.99">
-                        </div>
-
-                    </div>
-
-                    <!-- Two 430x200 cards in a row, centered and side by side -->
-                    <div class="row justify-content-center mt-4">
-                        <div class="col-auto">
-                            <div class="d-flex justify-content-center gap-4">
-                                <div id="bbq_wings_deal" class="card order-card"
-                                    style="height: 200px; width: 430px;">
-                                    <img
-                                        src="images/grilled-chicken-wings-2024-09-24-00-38-01-utc.jpg"
-                                        alt="..."
-                                        style="height: 100%; width: 100%; object-fit: cover;">
-                                    <h4
-                                        class="card-overlay-text d-inline text-start chicken">BBQ
-                                        Wings $9.49</h4>
-                                    <input type="hidden" value="chicken"
-                                        name="BBQ Wings $9.49">
-                                    <a href="#" class="btn btn-primary btn-sm"
-                                        style="position: absolute; bottom: 10px; right: 10px;">Order
-                                        Now</a>
-                                </div>
-                                <div id="arugula_pizza_deal"
-                                    class="card order-card"
-                                    style="height: 200px; width: 430px;">
-                                    <img
-                                        src="images/pizza-with-ham-arugula-and-tomatoes-2023-11-27-04-58-39-utc.jpg"
-                                        alt="..."
-                                        style="height: 100%; width: 100%; object-fit: cover;">
-                                    <h4
-                                        class="card-overlay-text d-inline text-start">Arugula
-                                        Pizza $11.99</h4>
-                                    <input type="hidden" value="pizza"
-                                        name="Arugula Pizza $11.99">
-                                    <a href="#" class="btn btn-primary btn-sm"
-                                        style="position: absolute; bottom: 10px; right: 10px;">Order
-                                        Now</a>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-        </section>
-
-                <!-- Footer -->
-                <footer class="footer bg-dark text-white py-4">
-                    <div class="container">
-                        <div class="row text-center">
-                            <!-- Column 1 -->
-                            <div class="col-md-3">
-                                <h5>Company</h5>
-                                <ul class="list-unstyled">
-                                    <li><a href="#" class="text-white">About
-                                            Us</a></li>
-                                    <li><a href="#"
-                                            class="text-white">Careers</a></li>
-                                    <li><a href="#"
-                                            class="text-white">Press</a></li>
-                                    <li><a href="#"
-                                            class="text-white">Blog</a></li>
-                                </ul>
-                            </div>
-                            <!-- Column 2 -->
-                            <div class="col-md-3">
-                                <h5>Services</h5>
-                                <ul class="list-unstyled">
-                                    <li><a href="#"
-                                            class="text-white">Delivery</a></li>
-                                    <li><a href="#"
-                                            class="text-white">Carryout</a></li>
-                                    <li><a href="#"
-                                            class="text-white">Catering</a></li>
-                                    <li><a href="#"
-                                            class="text-white">Rewards</a></li>
-                                </ul>
-                            </div>
-                            <!-- Column 3 -->
-                            <div class="col-md-3">
-                                <h5>Support</h5>
-                                <ul class="list-unstyled">
-                                    <li><a href="#" class="text-white">Help
-                                            Center</a></li>
-                                    <li><a href="#" class="text-white">Order
-                                            Tracking</a></li>
-                                    <li><a href="#"
-                                            class="text-white">FAQs</a></li>
-                                    <li><a href="#" class="text-white">Contact
-                                            Us</a></li>
-                                </ul>
-                            </div>
-                            <!-- Column 4 -->
-                            <div class="col-md-3">
-                                <h5>Social</h5>
-                                <ul class="list-unstyled">
-                                    <li><a href="#"
-                                            class="text-white">Facebook</a></li>
-                                    <li><a href="#"
-                                            class="text-white">Twitter</a></li>
-                                    <li><a href="#"
-                                            class="text-white">Instagram</a></li>
-                                    <li><a href="#"
-                                            class="text-white">YouTube</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="text-center mt-4">
-                            <p>&copy; 2025 6th Street Pizza. All Rights
-                                Reserved.</p>
-                        </div>
-                    </div>
-                </footer>
-
-                <!-- Terms and Conditions Section -->
-                <section class="terms-section bg-primary text-white py-5">
-                    <div class="container">
-                        <p class="lead">
-                            You must ask for this offer while available. Offer
-                            is available only at participating stores. Prices,
-                            delivery area, and charges may vary by store.
-                            Delivery orders are subject to each local store's
-                            delivery
-                            charge. 2-item minimum. Bone-in Wings, Bread Bowl
-                            Pasta, and Handmade Pan Pizza will cost extra. In
-                            addition, your local store may charge extra for some
-                            menu items available with this offer and some crust
-                            types, toppings, and sauces. Visit www.dominos.com
-                            to see your local store's online menu and the
-                            checkout page when placing an online order for
-                            order-specific pricing.
-                        </p>
-                        <p class="lead">
-                            Carryout only. You must ask for this limited time
-                            offer. Prices, participation and charges may vary.
-                            Size availability varies by crust type. Excludes XL
-                            and Specialty pizzas. In addition, your local store
-                            may charge extra for some toppings and sauces.
-                        </p>
-                        <p class="lead">
-                            Any Delivery Charge is not a tip paid to your
-                            driver. Please reward your driver for awesomeness.
-                            Drivers
-                            carry less than $20. Minimum purchase required for
-                            delivery. Delivery charge and tax may apply. Prices,
-                            participation, delivery area and charges may vary.
-                            Returned checks, along with the state's maximum
-                            allowable returned check fee, may be electronically
-                            presented to your bank. ©2024 Domino's IP Holder
-                            LLC. Domino's®, Domino's Pizza® and the game piece
-                            logo are registered trademarks of Domino's IP Holder
-                            LLC. "Coca-Cola" and the Contour Bottle design are
-                            registered trademarks of The Coca-Cola Company.
-                            Apple, the Apple logo and iPad are trademarks of
-                            Apple Inc., registered in the U.S. and other
-                            countries.
-                            App Store is a service mark of Apple Inc. Android is
-                            a trademark of Google Inc. Windows® Phone is a
-                            registered trademark of the Microsoft group of
-                            companies.
-                        </p>
-                        <p class="lead">
-                            <strong>CA Transparency in Supply Chains Act
-                                Disclosure</strong>
-                        </p>
-                        <p class="lead">
-                            <strong>CA Consumer Privacy Act</strong>
-                        </p>
-                        <p class="lead">
-                            Learn more about our Accessibility Policy.
-                        </p>
-                        <p class="lead">
-                            If you are using a screen reader and are having
-                            problems using this website, please call
-                            800-252-4031
-                            for assistance.
-                        </p>
-                    </div>
-                </section>
-
-                <!-- Delivery Modal -->
-                <div class="modal fade" id="deliveryModal" tabindex="-1"
-                    aria-labelledby="deliveryModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title"
-                                    id="deliveryModalLabel">Enter Delivery
-                                    Details</h5>
-                                <button type="button" class="btn-close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form>
-                                    <!-- Full Name -->
-                                    <div class="mb-3">
-                                        <label for="fullName"
-                                            class="form-label">Full Name</label>
-                                        <input type="text" class="form-control"
-                                            id="fullName" placeholder="John Doe"
-                                            required>
-                                        <span id="fullNameError"
-                                            class="text-danger"></span>
-                                    </div>
-
-                                    <!-- Email Address -->
-                                    <div class="mb-3">
-                                        <label for="email"
-                                            class="form-label">Email
-                                            Address</label>
-                                        <input type="email" class="form-control"
-                                            id="email"
-                                            placeholder="example@example.com"
-                                            required>
-                                        <span id="emailError"
-                                            class="text-danger"></span>
-                                    </div>
-
-                                    <!-- Address -->
-                                    <div class="mb-3">
-                                        <label for="address"
-                                            class="form-label">Address</label>
-                                        <input type="text" class="form-control"
-                                            id="address"
-                                            placeholder="123 Main St" required>
-                                        <span id="addressError"
-                                            class="text-danger"></span>
-                                    </div>
-
-                                    <!-- City, State, and Zip Code -->
-                                    <div class="mb-3 row">
-                                        <div class="col">
-                                            <label for="city"
-                                                class="form-label">City</label>
-                                            <input type="text"
-                                                class="form-control" id="city"
-                                                placeholder="City" required>
-                                            <span id="cityError"
-                                                class="text-danger"></span>
-                                        </div>
-                                        <div class="col">
-                                            <label for="state"
-                                                class="form-label">State</label>
-                                            <select class="form-select"
-                                                id="state" required>
-                                                <option value>Select
-                                                    State...</option>
-                                                <option
-                                                    value="AL">Alabama</option>
-                                                <option
-                                                    value="AK">Alaska</option>
-                                                <option
-                                                    value="AZ">Arizona</option>
-                                                <option
-                                                    value="AR">Arkansas</option>
-                                                <option
-                                                    value="CA">California</option>
-                                                <option
-                                                    value="CO">Colorado</option>
-                                                <option
-                                                    value="CT">Connecticut</option>
-                                                <option
-                                                    value="DE">Delaware</option>
-                                                <option
-                                                    value="FL">Florida</option>
-                                                <option
-                                                    value="GA">Georgia</option>
-                                                <option
-                                                    value="HI">Hawaii</option>
-                                                <option
-                                                    value="ID">Idaho</option>
-                                                <option
-                                                    value="IL">Illinois</option>
-                                                <option
-                                                    value="IN">Indiana</option>
-                                                <option value="IA">Iowa</option>
-                                                <option
-                                                    value="KS">Kansas</option>
-                                                <option
-                                                    value="KY">Kentucky</option>
-                                                <option
-                                                    value="LA">Louisiana</option>
-                                                <option
-                                                    value="ME">Maine</option>
-                                                <option
-                                                    value="MD">Maryland</option>
-                                                <option
-                                                    value="MA">Massachusetts</option>
-                                                <option
-                                                    value="MI">Michigan</option>
-                                                <option
-                                                    value="MN">Minnesota</option>
-                                                <option
-                                                    value="MS">Mississippi</option>
-                                                <option
-                                                    value="MO">Missouri</option>
-                                                <option
-                                                    value="MT">Montana</option>
-                                                <option
-                                                    value="NE">Nebraska</option>
-                                                <option
-                                                    value="NV">Nevada</option>
-                                                <option value="NH">New
-                                                    Hampshire</option>
-                                                <option value="NJ">New
-                                                    Jersey</option>
-                                                <option value="NM">New
-                                                    Mexico</option>
-                                                <option value="NY">New
-                                                    York</option>
-                                                <option value="NC">North
-                                                    Carolina</option>
-                                                <option value="ND">North
-                                                    Dakota</option>
-                                                <option value="OH">Ohio</option>
-                                                <option
-                                                    value="OK">Oklahoma</option>
-                                                <option
-                                                    value="OR">Oregon</option>
-                                                <option
-                                                    value="PA">Pennsylvania</option>
-                                                <option value="RI">Rhode
-                                                    Island</option>
-                                                <option value="SC">South
-                                                    Carolina</option>
-                                                <option value="SD">South
-                                                    Dakota</option>
-                                                <option
-                                                    value="TN">Tennessee</option>
-                                                <option
-                                                    value="TX">Texas</option>
-                                                <option value="UT">Utah</option>
-                                                <option
-                                                    value="VT">Vermont</option>
-                                                <option
-                                                    value="VA">Virginia</option>
-                                                <option
-                                                    value="WA">Washington</option>
-                                                <option value="WV">West
-                                                    Virginia</option>
-                                                <option
-                                                    value="WI">Wisconsin</option>
-                                                <option
-                                                    value="WY">Wyoming</option>
-                                            </select>
-                                            <span id="stateError"
-                                                class="text-danger"></span>
-                                        </div>
-                                        <div class="col">
-                                            <label for="zip"
-                                                class="form-label">Zip
-                                                Code</label>
-                                            <input type="text"
-                                                class="form-control" id="zip"
-                                                placeholder="12345" required>
-                                            <span id="zipError"
-                                                class="text-danger"></span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Phone Number -->
-                                    <div class="mb-3">
-                                        <label for="phone"
-                                            class="form-label">Phone
-                                            Number</label>
-                                        <input type="tel" class="form-control"
-                                            id="phone"
-                                            placeholder="(123) 456-7890"
-                                            required>
-                                        <span id="phoneError"
-                                            class="text-danger"></span>
-                                    </div>
-
-                                    <!-- Special Instructions -->
-                                    <div class="mb-3">
-                                        <label for="specialInstructions"
-                                            class="form-label">Special
-                                            Instructions</label>
-                                        <textarea class="form-control"
-                                            id="specialInstructions" rows="3"
-                                            placeholder="Knock on the door hard."></textarea>
-                                        <span id="specialInstructionsError"
-                                            class="text-danger"></span>
-                                    </div>
-
-                                    <!-- Submit Button -->
-                                    <button type="submit"
-                                        class="btn btn-primary w-100">Confirm</button>
-                                </form>
-
-                            </div>
-                        </div>
-                    </div>
+                <div id="arugula_pizza_deal" class="card order-card" style="height: 200px; width: 430px">
+                  <img
+                    src="images/pizza-with-ham-arugula-and-tomatoes-2023-11-27-04-58-39-utc.jpg"
+                    alt="..."
+                    style="height: 100%; width: 100%; object-fit: cover"
+                  />
+                  <h4 class="card-overlay-text d-inline text-start">Arugula Pizza $11.99</h4>
+                  <input type="hidden" value="pizza" name="Arugula Pizza $11.99" />
+                  <a href="#" class="btn btn-primary btn-sm" style="position: absolute; bottom: 10px; right: 10px">Order Now</a>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            <script src="js/cart.js"></script>
-            <script src="js/removeSmall.js"></script>
-            <script src="js/locationsModal.js"></script>
-            <script src="js/orderCustomizationModal.js"></script>
-            <script src="js/shoppingCartModal.js"></script>
-            <script src="js/orderModal.js"></script>
+    <!-- Footer -->
+    <footer class="footer bg-dark text-white py-4">
+      <div class="container">
+        <div class="row text-center">
+          <!-- Column 1 -->
+          <div class="col-md-3">
+            <h5>Company</h5>
+            <ul class="list-unstyled">
+              <li><a href="#" class="text-white">About Us</a></li>
+              <li><a href="#" class="text-white">Careers</a></li>
+              <li><a href="#" class="text-white">Press</a></li>
+              <li><a href="#" class="text-white">Blog</a></li>
+            </ul>
+          </div>
+          <!-- Column 2 -->
+          <div class="col-md-3">
+            <h5>Services</h5>
+            <ul class="list-unstyled">
+              <li><a href="#" class="text-white">Delivery</a></li>
+              <li><a href="#" class="text-white">Carryout</a></li>
+              <li><a href="#" class="text-white">Catering</a></li>
+              <li><a href="#" class="text-white">Rewards</a></li>
+            </ul>
+          </div>
+          <!-- Column 3 -->
+          <div class="col-md-3">
+            <h5>Support</h5>
+            <ul class="list-unstyled">
+              <li><a href="#" class="text-white">Help Center</a></li>
+              <li><a href="#" class="text-white">Order Tracking</a></li>
+              <li><a href="#" class="text-white">FAQs</a></li>
+              <li><a href="#" class="text-white">Contact Us</a></li>
+            </ul>
+          </div>
+          <!-- Column 4 -->
+          <div class="col-md-3">
+            <h5>Social</h5>
+            <ul class="list-unstyled">
+              <li><a href="#" class="text-white">Facebook</a></li>
+              <li><a href="#" class="text-white">Twitter</a></li>
+              <li><a href="#" class="text-white">Instagram</a></li>
+              <li><a href="#" class="text-white">YouTube</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <p>&copy; 2025 6th Street Pizza. All Rights Reserved.</p>
+        </div>
+      </div>
+    </footer>
 
-            <script src="js/orderModalHandler.js"></script>
-            <script src="js/orderLogic.js"></script>
-            <script src="js/orderButtonHandler.js"></script>
-            <script src="js/locations.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Terms and Conditions Section -->
+    <section class="terms-section bg-primary text-white py-5">
+      <div class="container">
+        <p class="lead">
+          You must ask for this offer while available. Offer is available only at participating stores. Prices, delivery area, and charges may vary by store.
+          Delivery orders are subject to each local store's delivery charge. 2-item minimum. Bone-in Wings, Bread Bowl Pasta, and Handmade Pan Pizza will cost
+          extra. In addition, your local store may charge extra for some menu items available with this offer and some crust types, toppings, and sauces. Visit
+          www.dominos.com to see your local store's online menu and the checkout page when placing an online order for order-specific pricing.
+        </p>
+        <p class="lead">
+          Carryout only. You must ask for this limited time offer. Prices, participation and charges may vary. Size availability varies by crust type. Excludes
+          XL and Specialty pizzas. In addition, your local store may charge extra for some toppings and sauces.
+        </p>
+        <p class="lead">
+          Any Delivery Charge is not a tip paid to your driver. Please reward your driver for awesomeness. Drivers carry less than $20. Minimum purchase
+          required for delivery. Delivery charge and tax may apply. Prices, participation, delivery area and charges may vary. Returned checks, along with the
+          state's maximum allowable returned check fee, may be electronically presented to your bank. ©2024 Domino's IP Holder LLC. Domino's®, Domino's Pizza®
+          and the game piece logo are registered trademarks of Domino's IP Holder LLC. "Coca-Cola" and the Contour Bottle design are registered trademarks of
+          The Coca-Cola Company. Apple, the Apple logo and iPad are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service
+          mark of Apple Inc. Android is a trademark of Google Inc. Windows® Phone is a registered trademark of the Microsoft group of companies.
+        </p>
+        <p class="lead">
+          <strong>CA Transparency in Supply Chains Act Disclosure</strong>
+        </p>
+        <p class="lead">
+          <strong>CA Consumer Privacy Act</strong>
+        </p>
+        <p class="lead">Learn more about our Accessibility Policy.</p>
+        <p class="lead">If you are using a screen reader and are having problems using this website, please call 800-252-4031 for assistance.</p>
+      </div>
+    </section>
 
-</body>
+    <!-- Delivery Modal -->
+    <div class="modal fade" id="deliveryModal" tabindex="-1" aria-labelledby="deliveryModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deliveryModalLabel">Enter Delivery Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <!-- Full Name -->
+              <div class="mb-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="fullName" placeholder="John Doe" required />
+                <span id="fullNameError" class="text-danger"></span>
+              </div>
 
+              <!-- Email Address -->
+              <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="email" placeholder="example@example.com" required />
+                <span id="emailError" class="text-danger"></span>
+              </div>
+
+              <!-- Address -->
+              <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" placeholder="123 Main St" required />
+                <span id="addressError" class="text-danger"></span>
+              </div>
+
+              <!-- City, State, and Zip Code -->
+              <div class="mb-3 row">
+                <div class="col">
+                  <label for="city" class="form-label">City</label>
+                  <input type="text" class="form-control" id="city" placeholder="City" required />
+                  <span id="cityError" class="text-danger"></span>
+                </div>
+                <div class="col">
+                  <label for="state" class="form-label">State</label>
+                  <select class="form-select" id="state" required>
+                    <option value>Select State...</option>
+                    <option value="AL">Alabama</option>
+                    <option value="AK">Alaska</option>
+                    <option value="AZ">Arizona</option>
+                    <option value="AR">Arkansas</option>
+                    <option value="CA">California</option>
+                    <option value="CO">Colorado</option>
+                    <option value="CT">Connecticut</option>
+                    <option value="DE">Delaware</option>
+                    <option value="FL">Florida</option>
+                    <option value="GA">Georgia</option>
+                    <option value="HI">Hawaii</option>
+                    <option value="ID">Idaho</option>
+                    <option value="IL">Illinois</option>
+                    <option value="IN">Indiana</option>
+                    <option value="IA">Iowa</option>
+                    <option value="KS">Kansas</option>
+                    <option value="KY">Kentucky</option>
+                    <option value="LA">Louisiana</option>
+                    <option value="ME">Maine</option>
+                    <option value="MD">Maryland</option>
+                    <option value="MA">Massachusetts</option>
+                    <option value="MI">Michigan</option>
+                    <option value="MN">Minnesota</option>
+                    <option value="MS">Mississippi</option>
+                    <option value="MO">Missouri</option>
+                    <option value="MT">Montana</option>
+                    <option value="NE">Nebraska</option>
+                    <option value="NV">Nevada</option>
+                    <option value="NH">New Hampshire</option>
+                    <option value="NJ">New Jersey</option>
+                    <option value="NM">New Mexico</option>
+                    <option value="NY">New York</option>
+                    <option value="NC">North Carolina</option>
+                    <option value="ND">North Dakota</option>
+                    <option value="OH">Ohio</option>
+                    <option value="OK">Oklahoma</option>
+                    <option value="OR">Oregon</option>
+                    <option value="PA">Pennsylvania</option>
+                    <option value="RI">Rhode Island</option>
+                    <option value="SC">South Carolina</option>
+                    <option value="SD">South Dakota</option>
+                    <option value="TN">Tennessee</option>
+                    <option value="TX">Texas</option>
+                    <option value="UT">Utah</option>
+                    <option value="VT">Vermont</option>
+                    <option value="VA">Virginia</option>
+                    <option value="WA">Washington</option>
+                    <option value="WV">West Virginia</option>
+                    <option value="WI">Wisconsin</option>
+                    <option value="WY">Wyoming</option>
+                  </select>
+                  <span id="stateError" class="text-danger"></span>
+                </div>
+                <div class="col">
+                  <label for="zip" class="form-label">Zip Code</label>
+                  <input type="text" class="form-control" id="zip" placeholder="12345" required />
+                  <span id="zipError" class="text-danger"></span>
+                </div>
+              </div>
+
+              <!-- Phone Number -->
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" placeholder="(123) 456-7890" required />
+                <span id="phoneError" class="text-danger"></span>
+              </div>
+
+              <!-- Special Instructions -->
+              <div class="mb-3">
+                <label for="specialInstructions" class="form-label">Special Instructions</label>
+                <textarea class="form-control" id="specialInstructions" rows="3" placeholder="Knock on the door hard."></textarea>
+                <span id="specialInstructionsError" class="text-danger"></span>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="btn btn-primary w-100">Confirm</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/cart.js"></script>
+    <script src="js/removeSmall.js"></script>
+    <script src="js/locationsModal.js"></script>
+    <script src="js/orderCustomizationModal.js"></script>
+    <script src="js/shoppingCartModal.js"></script>
+    <script src="js/orderModal.js"></script>
+
+    <script src="js/orderModalHandler.js"></script>
+    <script src="js/orderLogic.js"></script>
+    <script src="js/orderButtonHandler.js"></script>
+    <script src="js/locations.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
-
