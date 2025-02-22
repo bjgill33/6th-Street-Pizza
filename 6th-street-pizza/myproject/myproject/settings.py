@@ -4,7 +4,6 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
 SECRET_KEY = 'django-insecure-nt6pf7wxvdecs1kk254&kd&=r(pjf39ngsspbd*hr8hugrlwg='
 
 DEBUG = True
@@ -23,8 +22,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts'
 ]
-
-
 
 
 MIDDLEWARE = [
@@ -110,4 +107,4 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
