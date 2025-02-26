@@ -10,7 +10,7 @@
 ---
 
 ## TRELLO BOARD
-![Trello Board Screenshot]()
+![Trello Board Screenshot](https://github.com/bjgill33/6th-Street-Pizza/blob/main/Group_6-Sprint_Status_Updates/Group_6-Agile_Sprint_2_Week_1.png)
 
 ## STATUS UPDATE DETAILS
 
