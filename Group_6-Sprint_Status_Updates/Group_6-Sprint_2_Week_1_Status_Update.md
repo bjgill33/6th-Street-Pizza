@@ -22,8 +22,8 @@
 5. Testing the Checkout system
 6. Testing Ordering Page
 7. Fixing Bug Issues with the Ordering System.
-8. Write automated testing the index, menu, and payment html files using Selenium.
-9. write automated testing the ordering system using unittest.
+8. Write automated testing for the index, menu, and payment html files using Selenium.
+9. write automated testing for the ordering system using unittest.
 10. Continue code creation documentation.
 11. Report Bugs within the GitHub Issues section of repository.
 
@@ -32,8 +32,8 @@
 2. **Arthur H.:** Integrate the shopping cart w/ Django sessions.
 3. **Joe D.:** Testing landing page and menu page
 4. **Alex B.:** Fixing Bug Issues with the Ordering System. Report Bugs within the GitHub Issues section of repository.
-5. **William S.:** Testing landing page and menu page. Write automated testing the index, menu, and payment html files using Selenium.
-6. **Kodee E.:** Testing Ordering Page. Write automated testing the ordering system using unittest.
+5. **William S.:** Testing landing page and menu page. Write automated testing for the index, menu, and payment html files using Selenium.
+6. **Kodee E.:** Testing Ordering Page. Write automated testing for the ordering system using unittest.
    
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
 1. Some testers were not familiar with the `Issues` feature of the GitHub repository.
