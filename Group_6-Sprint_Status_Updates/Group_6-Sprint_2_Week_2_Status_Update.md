@@ -28,15 +28,15 @@
 11. Report Bugs within the GitHub Issues section of repository.
 
 ### Tasks Completed this week (by Name):
-1. **Elham J.:** 
+1. **Elham J.:** Updated backend database and Django framework.  Updated model.py in GitHub, added some validation and removed class topping as we discussed last week.
 2. **Arthur H.:** 
 3. **Joe D.:** 
 4. **Alex B.:** 
 5. **William S.:** 
-6. **Kodee E.:** 
+6. **Kodee E.:** Continued Testing landing page and menu page; Created files that use Selenium to automate the testing of the landing and menu pages. 
    
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
 1. This week's Sprint was challenged by outside factors.  Team members were distracted with other classes being taken this semester. I, as the Project Manager, was distracted with work outside of the class but was available to my group members through the MS Teams channel.  The team felt the Sprint was reduced by a few days which hindered some aspects of our time management.
    + **STATUS**: *resolved* Though we hit a roadblock during this Sprint, the team is still confident that we will have a deliverable product on time.
 2. The team discussed some issues of scope creep in the database schema regarding keeping tables of inventory for the restaurant.
-   + **STATUS**: *unresolved* The team has not yet decided whether these database tables are meaningful to the overall scope of the project.
+   + **STATUS**: *resolved* The team decided these database tables are **NOT** meaningful to the overall scope of the project.
