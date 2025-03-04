@@ -10,7 +10,7 @@
 ---
 
 ## TRELLO BOARD
-![Trello Board Screenshot](https://github.com/bjgill33/6th-Street-Pizza/blob/gill-working_branch/Group_6-Sprint_Status_Updates/Group_6-Agile_Sprint_2_Week_2.png)
+![Trello Board Screenshot]()
 
 ## STATUS UPDATE DETAILS
 
@@ -23,16 +23,13 @@
 6. Continue Testing Ordering Page.
 7. Fixing Bug Issues with the Ordering System.
 8. Write automated testing for the index, menu, and payment html files using Selenium.
-9. Write automated testing for the ordering system using unittest.
 10. Continue code creation documentation.
 11. Report Bugs within the GitHub Issues section of repository.
 
 ### Tasks Completed this week (by Name):
-1. **Elham J.:** Updated backend database and Django framework.  Updated model.py in GitHub, added some validation and removed class topping as we discussed last week.
-2. **Arthur H.:** 
-3. **Joe D.:** 
-4. **Alex B.:** 
-5. **William S.:** 
+1. **Elham J.:** Updated backend database and Django framework.  Updated model.py in GitHub, added some validation and removed class topping as it relates to inventory. Toppings table will be used to facilitate ordering system at the user end.
+2. **Arthur H.:** Updated database schema with `locations` and `discount_code` tables.  Updated code creation for `Shopping Cart`. Setting up server to deploy application.  
+5. **William S.:** Continued Testing landing page and menu page using Selenium. Fixed issues with the payments page.
 6. **Kodee E.:** Continued Testing landing page and menu page; Created files that use Selenium to automate the testing of the landing and menu pages. 
    
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
