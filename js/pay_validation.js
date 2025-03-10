@@ -12,8 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     
-    document.getElementById("paymentForm").addEventListener("submit", handleFormSubmit(validateCheckoutForm));
+    document.getElementById("paymentForm").addEventListener("submit", handleFormSubmit(validatePaymentForm));
     document.getElementById("deliveryAddressForm").addEventListener("submit", handleFormSubmit(validateAddressForm));
+    document.getElementById("deliveryModalForm").addEventListener("submit", handleFormSubmit(validateModalForm));
+
 });
 
 function handleFormSubmit(validateForm) {
@@ -171,10 +173,14 @@ function validateForm(fields) {
     return isValid;
 }
 
-function validateCheckoutForm() {
-    return validateForm(["email", "fullName", "phone", "address", "city", "state", "zip", "cardNumber", "expiryDate", "cvv"]);
+function validatePaymentForm() {
+    return validateForm(["cardNumber", "expiryDate", "cvv"]);
 }
 
 function validateAddressForm() {
     return validateForm(["email", "fullName", "phone", "address", "city", "state", "zip"]);
+}
+
+function validateModalForm() {
+    return validateForm(["fullName", "email", "address", "city", "state", "zip", "phone", "specialInstructions"]);
 }
