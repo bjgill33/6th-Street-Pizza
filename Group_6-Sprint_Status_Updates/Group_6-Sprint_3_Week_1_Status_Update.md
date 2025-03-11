@@ -17,12 +17,12 @@
 
 ### Tasks Scheduled for this week:
 1. Test functionality of Ordering System and Shopping Cart.
-2. Create Checkout with current items in Shopping Cart.
+2. Testing the Checkout with current items in Shopping Cart.
 3. Continue Testing landing page and menu page.
 4. Continue Testing the Shopping Cart.
 5. Continue Testing the Checkout system.
 6. Continue Testing Ordering Page.
-7. Fixing Bug Issues with the Ordering System.
+7. Fixing Bug Issues with the menu, ordering system, and shopping cart.
 8. Write automated testing for the index, menu, and payment html files using Selenium.
 10. Continue code creation documentation.
 11. Report Bugs within the GitHub Issues section of repository.
@@ -34,6 +34,6 @@
 4. **Alex B.:** Continued testing and addressing issues/bugs documented by testers.  
 5. **William S.:** Continued automated testing using Selenium, adding more testing to our landing and menu pages. Updated code validation to checkout forms. Successful automation testing that orders from the menu and adds items to shopping cart.
 6. **Kodee E.:** Continued Testing landing page and menu page; Created files that use Selenium to automate the testing of the landing and menu pages.
-7. **Tony S.:** 
+7. **Tony S.:** Testing of the Shopping Cart and Ordering System.
    
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
