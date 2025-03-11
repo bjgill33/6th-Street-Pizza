@@ -28,11 +28,11 @@
 11. Report Bugs within the GitHub Issues section of repository.
 
 ### Tasks Completed this week (by Name):
-1. **Elham J.:** Updated backend database and Django framework.  Updated model.py in GitHub
-2. **Arthur H.:**
+1. **Elham J.:** Updated backend database and Django framework.  Updated model.py in GitHub: Add the topping section to the code and create the topping table in the database.
+2. **Arthur H.:** Updated and improved frontend JavaScript. Continued developing Django framework integration with bootstrap frontend.
 3. **Joe D.:** Continued manual testing the updated application as the project's "Customer."
-4. **Alex B.:**  
-5. **William S.:** 
+4. **Alex B.:** Continued testing and addressing issues/bugs documented by testers.  
+5. **William S.:** Continued automated testing using Selenium, adding more testing to our landing and menu pages. Updated code validation to checkout forms. Successful automation testing that orders from the menu and adds items to shopping cart.
 6. **Kodee E.:** Continued Testing landing page and menu page; Created files that use Selenium to automate the testing of the landing and menu pages.
 7. **Tony S.:** 
    
