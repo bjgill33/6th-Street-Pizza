@@ -28,7 +28,7 @@
 11. Report Bugs within the GitHub Issues section of repository.
 
 ### Tasks Completed this week (by Name):
-1. **Elham J.:** Updated backend database and Django framework.  Updated model.py in GitHub: Add the topping section to the code and create the topping table in the database.
+1. **Elham J.:** Updated backend database and Django framework.  Updated model.py in GitHub: Add the topping section to the code and create the topping table in the database. Continued testing of database.
 2. **Arthur H.:** Updated and improved frontend JavaScript. Continued developing Django framework integration with bootstrap frontend.
 3. **Joe D.:** Continued manual testing the updated application as the project's "Customer."
 4. **Alex B.:** Continued testing and addressing issues/bugs documented by testers.  
