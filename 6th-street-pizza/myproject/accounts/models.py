@@ -1,9 +1,17 @@
-import re
-from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
+from django.core.exceptions import ValidationError
+import re
+from decimal import Decimal
 
+# Custom Phone Number Validator
+def validate_phone_number(value):
+    phone_regex = re.compile(r'^\+?1?\d{9,15}$')
+    if not phone_regex.match(str(value)):
+        raise ValidationError("Invalid phone number format. Please use the format: '+999999999'.")
+
+# Custom User Manager
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, name, phone, address, password=None):
         if not email:
@@ -33,7 +41,11 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, help_text="Enter a valid email address.")
     name = models.CharField(max_length=255)
-    phone = models.CharField(max_length=15, help_text="Enter a valid phone number (e.g., +1234567890).")
+    phone = models.CharField(
+        max_length=15,
+        validators=[validate_phone_number],
+        help_text="Enter a valid phone number (e.g., +1234567890)."
+    )
     address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
@@ -48,44 +60,46 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-    def clean(self):
-        super().clean()
-
-        # Phone number validation
-        phone_regex = re.compile(r'^\+?1?\d{9,15}$')
-        if not phone_regex.match(str(self.phone)):  # Ensure self.phone is a string
-            raise ValidationError("Invalid phone number format. Please use the format: '+999999999'.")
-
-# Pizza Model
-class Pizza(models.Model):
-    name = models.CharField(max_length=100)
-    toppings = models.CharField(max_length=255, help_text="Enter toppings separated by commas.")
+# Topping Model
+class Topping(models.Model):
+    name = models.CharField(max_length=100, unique=True, help_text="Enter the name of the topping.")
     price = models.DecimalField(
         max_digits=6,
         decimal_places=2,
         validators=[MinValueValidator(0, message="Price cannot be negative.")],
-        help_text="Enter a non-negative price."
+        help_text="Enter the additional price for the topping."
     )
 
     def __str__(self):
         return self.name
 
-    def clean(self):
-        super().clean()
+# Pizza Model
+class Pizza(models.Model):
+    name = models.CharField(max_length=100, help_text="Enter the name of the pizza.")
+    toppings = models.ManyToManyField(Topping, blank=True, help_text="Select toppings for the pizza.")
+    base_price = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        validators=[MinValueValidator(0, message="Price cannot be negative.")],
+        help_text="Enter the base price of the pizza."
+    )
 
-        # Ensure the price is not negative
-        if self.price < 0:
-            raise ValidationError("Price cannot be negative.")
+    def __str__(self):
+        return self.name
+
+    def total_price(self):
+        topping_prices = sum(topping.price for topping in self.toppings.all())
+        return Decimal(str(self.base_price)) + Decimal(str(topping_prices))
 
 # Order Model
 class Order(models.Model):
-    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    pizzas = models.ManyToManyField(Pizza)
+    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='orders')
+    pizzas = models.ManyToManyField(Pizza, related_name='orders')
     total_price = models.DecimalField(
         max_digits=8,
         decimal_places=2,
         validators=[MinValueValidator(0, message="Total price cannot be negative.")],
-        help_text="Enter a non-negative total price."
+        help_text="Enter the total price of the order."
     )
     created_at = models.DateTimeField(auto_now_add=True)
     status_choices = [('Pending', 'Pending'), ('Completed', 'Completed'), ('Cancelled', 'Cancelled')]
@@ -93,10 +107,3 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id} by {self.customer.name}"
-
-    def clean(self):
-        super().clean()
-
-        # Ensure the total price is not negative
-        if self.total_price < 0:
-            raise ValidationError("Total price cannot be negative.")
