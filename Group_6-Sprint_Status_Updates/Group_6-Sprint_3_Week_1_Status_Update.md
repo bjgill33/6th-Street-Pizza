@@ -30,7 +30,7 @@
 ### Tasks Completed this week (by Name):
 1. **Elham J.:** Updated backend database and Django framework.  Updated model.py in GitHub
 2. **Arthur H.:**
-3. **Joe D.:**
+3. **Joe D.:** Continued manual testing the updated application as the project's "Customer."
 4. **Alex B.:**  
 5. **William S.:** 
 6. **Kodee E.:** Continued Testing landing page and menu page; Created files that use Selenium to automate the testing of the landing and menu pages.
