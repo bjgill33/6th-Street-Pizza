@@ -37,3 +37,9 @@
 7. **Tony S.:** Testing of the Shopping Cart and Ordering System.
    
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
+1. Participation with the Trello workboard; PM needs to update the workboard in a more timely manner and team members should inquire about duties during the current Sprint.
+   + **STATUS**: *resolved* Project Manager will update the Trello board daily to allow group members to see the workflow in a timely manner.  All team members should inquire as to their expected tasks for the current Sprint. 
+2. Testers were not committing their tests and documentation to the GitHub repo.
+   + **STATUS**: *resolved* It has been recorded during a MS Teams meeting that any testing code created should be commited to the main branch for Project Manager review.  The test code will not affect the projects overall application code so don't be afraid to commit immediately.
+3. Team members are still distracted by assignment and projects due for other classes.
+   + **STATUS**: *unresolved* As I cannot ask a team member to focus less on any aspect of their outside commitments, I do ask that team members set aside at least one (1) day to focus on the Capstone project. However, the team still feels that the project is on track to be deliverable in the allotted time. 
