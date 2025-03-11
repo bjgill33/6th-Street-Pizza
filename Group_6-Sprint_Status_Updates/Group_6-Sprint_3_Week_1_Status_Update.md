@@ -11,6 +11,7 @@
 
 ## TRELLO BOARD
 ![Trello Board Screenshot]()
+[Link to Trello Board]()
 
 ## STATUS UPDATE DETAILS
 
