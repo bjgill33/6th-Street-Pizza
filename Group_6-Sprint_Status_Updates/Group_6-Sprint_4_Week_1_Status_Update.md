@@ -43,7 +43,7 @@
    + **STATUS**: *resolved* In the latest meeting the team discussed this issue and plan to push commits regularly.
 
 ### Group Self Assessment - Grade Justification
-**B**  
+**Grade Assessment**: **B**  
 
 **Reason**:  The team feels the project is ahead of schedule. Others felt that the inconsistency of the latest available version of the application on GitHub preventing them from effectively completing weekly tasks.  Theses issues were addressed in the last Team Meeting and will improve for the remaining Sprint weeks.
 
