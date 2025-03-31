@@ -45,6 +45,6 @@
 ### Group Self Assessment - Grade Justification
 **Grade Assessment**: **B**  
 
-**Reason**:  The team feels the project is ahead of schedule. Others felt that the inconsistency of the latest available version of the application on GitHub preventing them from effectively completing weekly tasks.  Theses issues were addressed in the last Team Meeting and will improve for the remaining Sprint weeks.
+**Reason**:  The team feels the project is ahead of schedule. Others felt that the inconsistency of the latest available version of the application on GitHub prevented them from effectively completing weekly tasks.  Theses issues were addressed in the last Team Meeting and will improve for the remaining Sprint weeks.
 
 **Improvements**: The team NEEDS to focus more on communication.  Daily updates whether any contributions are made or not.  Collaborating and communicating with fellow team members if they feel they have no direction during the current Sprint.
