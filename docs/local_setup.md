@@ -38,7 +38,7 @@ pip install --user pipenv
 Install dependencies into the environment
 
 ```shell
-pipenv install
+pipenv install --dev
 ```
 
 Activate environment

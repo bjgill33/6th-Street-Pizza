@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a88d7cdfe7da3a150019bf50fd52efc07fbca152bf65d838caa10a3c5fc91b9a"
+            "sha256": "00dfc25424857d7f81972b212bb8254da346f92aa19fbad816260b64356b6b53"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -24,22 +24,6 @@
             "markers": "python_version >= '3.8'",
             "version": "==3.8.1"
         },
-        "attrs": {
-            "hashes": [
-                "sha256:1c97078a80c814273a76b2a298a932eb681c87415c11dee0a6921de7f1b02c3e",
-                "sha256:c75a69e28a550a7e93789579c22aa26b0f5b83b75dc4e08fe092980051e1090a"
-            ],
-            "markers": "python_version >= '3.8'",
-            "version": "==25.1.0"
-        },
-        "certifi": {
-            "hashes": [
-                "sha256:3d5da6925056f6f18f119200434a4780a94263f10d1c21d032a6f6b2baa20651",
-                "sha256:ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe"
-            ],
-            "markers": "python_version >= '3.6'",
-            "version": "==2025.1.31"
-        },
         "django": {
             "hashes": [
                 "sha256:1e39eafdd1b185e761d9fab7a9f0b9fa00af1b37b25ad980a8aa0dac13535690",
@@ -48,6 +32,49 @@
             "index": "pypi",
             "markers": "python_version >= '3.10'",
             "version": "==5.1.6"
+        },
+        "gunicorn": {
+            "hashes": [
+                "sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d",
+                "sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.7'",
+            "version": "==23.0.0"
+        },
+        "packaging": {
+            "hashes": [
+                "sha256:09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759",
+                "sha256:c228a6dc5e932d346bc5739379109d49e8853dd8223571c7c5b55260edc0b97f"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==24.2"
+        },
+        "sqlparse": {
+            "hashes": [
+                "sha256:09f67787f56a0b16ecdbde1bfc7f5d9c3371ca683cfeaa8e6ff60b4807ec9272",
+                "sha256:cf2196ed3418f3ba5de6af7e82c694a9fbdbfecccdfc72e281548517081f16ca"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==0.5.3"
+        }
+    },
+    "develop": {
+        "attrs": {
+            "hashes": [
+                "sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3",
+                "sha256:75d7cefc7fb576747b2c81b4442d4d4a1ce0900973527c011d1030fd3bf4af1b"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==25.3.0"
+        },
+        "certifi": {
+            "hashes": [
+                "sha256:3d5da6925056f6f18f119200434a4780a94263f10d1c21d032a6f6b2baa20651",
+                "sha256:ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==2025.1.31"
         },
         "h11": {
             "hashes": [
@@ -79,17 +106,16 @@
                 "sha256:2725bd0a9925919b9b51739eea5f9e2bae91e83288108a9ad338b2e3a4435ee5",
                 "sha256:3f8804571ebe159c380ac6de37643bb4685970655d3bba243530d6558b799aa0"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.7.1"
         },
         "selenium": {
             "hashes": [
-                "sha256:3a62f7ec33e669364a6c0562a701deb69745b569c50d55f1a912bf8eb33358ba",
-                "sha256:ce5d26f1ddc1111641113653af33694c13947dd36c2df09cdd33f554351d372e"
+                "sha256:16ab890fc7cb21a01e1b1e9a0fbaa9445fe30837eabc66e90b3bacf12138126a",
+                "sha256:90bcd3be86a1762100a093b33e5e4530b328226da94208caadb15ce13243dffd"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==4.29.0"
+            "version": "==4.30.0"
         },
         "sniffio": {
             "hashes": [
@@ -106,14 +132,6 @@
             ],
             "version": "==2.4.0"
         },
-        "sqlparse": {
-            "hashes": [
-                "sha256:09f67787f56a0b16ecdbde1bfc7f5d9c3371ca683cfeaa8e6ff60b4807ec9272",
-                "sha256:cf2196ed3418f3ba5de6af7e82c694a9fbdbfecccdfc72e281548517081f16ca"
-            ],
-            "markers": "python_version >= '3.8'",
-            "version": "==0.5.3"
-        },
         "trio": {
             "hashes": [
                 "sha256:d8c463f1a9cc776ff63e331aba44c125f423a5a13c684307e828d930e625ba66",
@@ -124,19 +142,19 @@
         },
         "trio-websocket": {
             "hashes": [
-                "sha256:608ec746bb287e5d5a66baf483e41194193c5cf05ffaad6240e7d1fcd80d1e6f",
-                "sha256:d55ccd4d3eae27c494f3fdae14823317839bdcb8214d1173eacc4d42c69fc91b"
+                "sha256:22c72c436f3d1e264d0910a3951934798dcc5b00ae56fc4ee079d46c7cf20fae",
+                "sha256:df605665f1db533f4a386c94525870851096a223adcb97f72a07e8b4beba45b6"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==0.12.1"
+            "version": "==0.12.2"
         },
         "typing-extensions": {
             "hashes": [
-                "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d",
-                "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"
+                "sha256:0a4ac55a5820789d87e297727d229866c9650f6521b64206413c4fbada24d95b",
+                "sha256:c8dd92cc0d6425a97c18fbb9d1954e5ff92c1ca881a309c45f06ebc0b79058e5"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==4.12.2"
+            "version": "==4.13.0"
         },
         "urllib3": {
             "extras": [
@@ -165,6 +183,5 @@
             "markers": "python_full_version >= '3.7.0'",
             "version": "==1.2.0"
         }
-    },
-    "develop": {}
+    }
 }
