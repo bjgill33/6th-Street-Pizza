@@ -1,0 +1,330 @@
+[
+    {
+        "model": "accounts.restaurantlocation",
+        "pk": 1,
+        "fields": {
+            "store_number": 1,
+            "address": "123 Main St",
+            "city": "Raleigh",
+            "state": "NC",
+            "phone": "(919) 555-1234",
+            "manager_name": "John Williams",
+            "zip_code": "27601",
+            "status": "Open"
+        }
+    },
+    {
+        "model": "accounts.restaurantlocation",
+        "pk": 2,
+        "fields": {
+            "store_number": 2,
+            "address": "456 Oak St",
+            "city": "Raleigh",
+            "state": "NC",
+            "phone": "(919) 555-5678",
+            "manager_name": "Maria Garcia",
+            "zip_code": "27601",
+            "status": "Open"
+        }
+    },
+    {
+        "model": "accounts.restaurantlocation",
+        "pk": 3,
+        "fields": {
+            "store_number": 3,
+            "address": "789 Pine St",
+            "city": "Raleigh",
+            "state": "NC",
+            "phone": "(919) 555-8765",
+            "manager_name": "Mike Johnson Sr",
+            "zip_code": "27601",
+            "status": "Open"
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 1,
+        "fields": {
+            "name": "Pepperoni",
+            "price": "0.25",
+            "description": "10 slices of spicy pepperoni for a classic flavor boost."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 2,
+        "fields": {
+            "name": "Anchovy",
+            "price": "0.25",
+            "description": "10 small fillets of salty anchovies, perfect for seafood lovers."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 3,
+        "fields": {
+            "name": "Mushrooms",
+            "price": "0.30",
+            "description": "10 fresh mushroom slices for an earthy, umami flavor."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 4,
+        "fields": {
+            "name": "Olives",
+            "price": "0.40",
+            "description": "A generous handful of sliced black olives, mild and briny."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 5,
+        "fields": {
+            "name": "Sausage",
+            "price": "0.50",
+            "description": "6 chunks of Italian sausage with a rich, savory taste."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 6,
+        "fields": {
+            "name": "Bacon",
+            "price": "0.60",
+            "description": "Crispy bacon bits spread evenly across your pizza."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 7,
+        "fields": {
+            "name": "Onions",
+            "price": "0.20",
+            "description": "A handful of thinly sliced onions for a mild, sweet crunch."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 8,
+        "fields": {
+            "name": "Green Peppers",
+            "price": "0.35",
+            "description": "10 strips of fresh, crisp green peppers."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 9,
+        "fields": {
+            "name": "Pineapple",
+            "price": "0.45",
+            "description": "10 juicy pineapple chunks for a sweet and tangy kick."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 10,
+        "fields": {
+            "name": "Jalapenos",
+            "price": "0.25",
+            "description": "6 spicy jalapeno slices for extra heat."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 11,
+        "fields": {
+            "name": "Extra Cheese",
+            "price": "0.55",
+            "description": "A double portion of mozzarella cheese for extra gooeyness."
+        }
+    },
+    {
+        "model": "accounts.topping",
+        "pk": 12,
+        "fields": {
+            "name": "Tomatoes",
+            "price": "0.30",
+            "description": "10 fresh tomato slices for a juicy and tangy burst."
+        }
+    },
+    {
+        "model": "accounts.pizza",
+        "pk": 13,
+        "fields": {
+            "name": "Cheese Pizza",
+            "description": "Classic cheese pizza with a golden crust and a rich tomato base topped with mozzarella.",
+            "price_small": "9.99",
+            "price_medium": "12.99",
+            "price_large": "15.99",
+            "price_extra_large": "19.99",
+            "image": "images/pizzas/cheese_pizza/default_cheese_pizza.jpg"
+        }
+    },
+    {
+        "model": "accounts.pizza",
+        "pk": 14,
+        "fields": {
+            "name": "Veggie Pizza",
+            "description": "A delicious veggie pizza loaded with bell peppers, onions, olives, mushrooms, and fresh tomatoes.",
+            "price_small": "9.99",
+            "price_medium": "12.99",
+            "price_large": "15.99",
+            "price_extra_large": "19.99",
+            "image": "images/pizzas/veggie_pizza/default_veggie_pizza.jpg"
+        }
+    },
+    {
+        "model": "accounts.pizza",
+        "pk": 15,
+        "fields": {
+            "name": "Pepperoni Pizza",
+            "description": "A flavorful pepperoni pizza with premium cured pepperoni slices on a classic mozzarella base.",
+            "price_small": "9.99",
+            "price_medium": "12.99",
+            "price_large": "15.99",
+            "price_extra_large": "19.99",
+            "image": "images/pizzas/pepperoni_pizza/default_pepperoni_pizza.jpg"
+        }
+    },
+    {
+        "model": "accounts.pizza",
+        "pk": 17,
+        "fields": {
+            "name": "Margarita Pizza",
+            "description": "Classic thin-crust Italian pizza from Naples. Crispy, buttery, rich flavor. ",
+            "price_small": "9.99",
+            "price_medium": "12.99",
+            "price_large": "15.99",
+            "price_extra_large": "19.99",
+            "image": "images/pizzas/margarita_pizza/default_margarita_pizza.jpg"
+        }
+    },
+    {
+        "model": "accounts.pizza",
+        "pk": 19,
+        "fields": {
+            "name": "Meat Lovers",
+            "description": "Bacon, Italian Sausage, pepperoni, in a delicious blend of butter, herbs and cheese",
+            "price_small": "11.99",
+            "price_medium": "14.99",
+            "price_large": "17.99",
+            "price_extra_large": "20.00",
+            "image": "images/pizzas/meat_lovers_pizza/default_meat_lovers_pizza.jpg"
+        }
+    },
+    {
+        "model": "accounts.pizza",
+        "pk": 21,
+        "fields": {
+            "name": "Hawaiian pizza",
+            "description": "Hawaiian pizza brings a tropical twist to the traditional pie. It’s a unique combination of sweet pineapple chunks and savory ham, spread over a cheesy, tomato-sauced crust. T",
+            "price_small": "5.99",
+            "price_medium": "8.99",
+            "price_large": "11.99",
+            "price_extra_large": "15.99",
+            "image": null
+        }
+    },
+    {
+        "model": "accounts.wing",
+        "pk": 2,
+        "fields": {
+            "name": "6 Buffalo Chicken Wings",
+            "price": "10.99",
+            "description": "Spicy and tangy buffalo wings served with a side of ranch or blue cheese.",
+            "image": "images/chicken/buffalo_wings/default_buffalo_wings.jpg"
+        }
+    },
+    {
+        "model": "accounts.wing",
+        "pk": 3,
+        "fields": {
+            "name": "6 BBQ Chicken Wings",
+            "price": "10.99",
+            "description": "Sweet and smoky BBQ wings glazed with our signature BBQ sauce.",
+            "image": "images/chicken/bbq/default_bbq_wings.jpg"
+        }
+    },
+    {
+        "model": "accounts.wing",
+        "pk": 4,
+        "fields": {
+            "name": "6 Hot Honey Chicken Wings",
+            "price": "10.99",
+            "description": "Crispy wings coated in a spicy-sweet hot honey glaze for a perfect balance of heat and sweetness.",
+            "image": "images/chicken/hot_wings/default_hot_wings.jpg"
+        }
+    },
+    {
+        "model": "accounts.wing",
+        "pk": 5,
+        "fields": {
+            "name": "Dr. Pepper Wings",
+            "price": "10.99",
+            "description": "These Sweet & Sticky Dr Pepper Wings are so easy to eat and are not spicy so the kids can also enjoy them.",
+            "image": "images/chicken/dr_pepper_wings/default_drpepper_wings.jpg"
+        }
+    },
+    {
+        "model": "accounts.drink",
+        "pk": 2,
+        "fields": {
+            "name": "2 Liter Coca-Cola",
+            "price": "3.99",
+            "description": "A refreshing 2-liter bottle of classic Coca-Cola, perfect for sharing.",
+            "image": "images/drinks/coco_cola/default_cococola_drink.jpg"
+        }
+    },
+    {
+        "model": "accounts.drink",
+        "pk": 3,
+        "fields": {
+            "name": "2 Liter Root Beer",
+            "price": "3.99",
+            "description": "Robust flavor and creamy texture. It typically features a blend of sassafras root, vanilla and sweetness.",
+            "image": "images/drinks/rootbeer/default_rootbeer_drink.jpg"
+        }
+    },
+    {
+        "model": "accounts.drink",
+        "pk": 4,
+        "fields": {
+            "name": "8 oz Dasani Water",
+            "price": "1.49",
+            "description": "A pure and refreshing 8-ounce bottle of Dasani water for hydration.",
+            "image": "images/drinks/water/default_water_drink.jpg"
+        }
+    },
+    {
+        "model": "accounts.dessert",
+        "pk": 1,
+        "fields": {
+            "name": "Chocolate Lava Cake",
+            "price": "6.99",
+            "description": "A warm and gooey chocolate cake with a molten center, perfect for chocolate lovers.",
+            "image": "images/desserts/chocolate_cake/default_chocolate_cake_dessert.jpg"
+        }
+    },
+    {
+        "model": "accounts.dessert",
+        "pk": 2,
+        "fields": {
+            "name": "6 Chocolate Chip Cookies",
+            "price": "5.99",
+            "description": "Freshly baked soft chocolate chip cookies with a golden brown crunch on the outside.",
+            "image": "images/desserts/cookies/default_chocolate_chip_cookie_dessert.jpg"
+        }
+    },
+    {
+        "model": "accounts.dessert",
+        "pk": 3,
+        "fields": {
+            "name": "Cheesecake",
+            "price": "4.99",
+            "description": "A creamy, thick cheesecake made with real vanilla and fresh milk.",
+            "image": "images/desserts/cheese_cake/default_cheese_cake_dessert.jpg"
+        }
+    }
+]
