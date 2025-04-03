@@ -4,13 +4,28 @@ If at any point in this process you encounter an error, ping me (Alexander) on t
 
 Prerequisites:
 
+- Git
 - Python 3
 - Pip
 - VsCode or other text editor
 
 ## First Time Setup
 
-### Setup Env (Step 1)
+### Clone repo (Step 1)
+
+Clone the repo to your computer
+
+```shell
+git clone https://github.com/bjgill33/6th-Street-Pizza
+```
+
+Switch branches to the production branch (this step may change in the future)
+
+```shell
+git switch Production
+```
+
+### Setup Env (Step 2)
 
 Open up the terminal/command prompt. In VsCode this can be easily done py pressing `CTRL+~`
 
@@ -32,9 +47,9 @@ Activate environment
 pipenv shell
 ```
 
-### Django Setup (Step 2)
+### Django Setup (Step 3)
 
-If everything worked in step 1, django should already be installed. All that remains is to setup the database.
+If everything worked in step 2, django should already be installed. All that remains is to setup the database.
 
 In your editor, create a file called `local-dev.txt`. Create this file in the same directory which has `Pipfile` and `.gitignore.
 The existence of this file makes the django installation use a local SQLite3 database instead of MySQL which is used on the production server.
