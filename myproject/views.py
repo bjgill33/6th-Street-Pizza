@@ -1,4 +1,21 @@
+# Import Stripe's official Python library
+import stripe
+
+# Import Django settings to access the Stripe secret key from settings.py
+from django.conf import settings
+
+# Import Django's email sending function (can be swapped for SendGrid)
+from sendgrid import SendGridAPIClient  # or SendGrid
+from sendgrid.helpers.mail import Mail
+
+# Allow this view to be accessed without CSRF protection (useful for APIs)
+from django.views.decorators.csrf import csrf_exempt
+
+# Used to return JSON responses (like Stripe session ID)
+from django.http import JsonResponse
+
 # Import Django utilities for rendering templates and handling HTTP responses
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 
@@ -18,7 +35,11 @@ from decimal import Decimal
 # Create a logger to log warnings and errors
 logger = logging.getLogger(__name__)
 
-from django.views.decorators.csrf import csrf_exempt
+# Set the Stripe secret API key from Django settings
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+# Set the Stripe secret API key from Django settings
+sg_api_key = settings.SEND_GRID_API_KEY
 
 
 # Helper function to retrieve an object safely or log a warning if not found
@@ -105,7 +126,58 @@ def menu(request):
 
 # Render the payment page
 def payment(request):
-    return render(request, 'payment.html')
+    return render(request, 'payment.html', {
+        'stripe_public_key': settings.STRIPE_PUBLIC_KEY
+    })
+
+
+# Sends email to user when payment is successful
+@csrf_exempt
+def payment_success(request):
+    # Retrieve delivery and cart data from session
+    cart = request.session.get('cart', {})
+
+    sg = SendGridAPIClient(sg_api_key)
+    
+    # Retrieve metadata sent via Stripe 
+    customer_email = request.session.get("customer_email", "customer@example.com")
+
+    # order summary
+    order_lines = []
+    total_price = 0
+    for item in cart.values():
+        line = f"{item['quantity']}x {item['name']} ({item.get('size', '')})"
+        if item.get('toppings'):
+            line += f" - Toppings: {', '.join(item['toppings'])}"
+        item_total = float(item['price']) * item['quantity']
+        total_price += item_total
+        line += f" - ${item_total:.2f}"
+        order_lines.append(line)
+
+    order_summary = "\n".join(order_lines)
+    total_formatted = f"${total_price:.2f}"
+
+    # Sending confirmation email
+    message = Mail(
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to_emails=customer_email,
+        subject="Your 6th Street Pizza Order Confirmation",
+        plain_text_content=f"Thank you for your order! 🍕"
+    )
+
+    try:
+        sg.send(message)
+    except Exception as e:
+        print("SendGrid error:", e)
+
+    # Clear the cart from session
+    request.session['cart'] = {}
+
+    # Render payment_success
+    return render(request, "payment_success.html", {
+        "total": total_formatted,
+        "items": order_lines
+    })
 
 
 # Retrieve the cart from the session or return an empty cart if it does not exist
@@ -128,9 +200,12 @@ def add_to_cart(request):
             # Retrieve data from the request
             product_id = request.POST.get("product_id")
             category = request.POST.get("category")
-            size = request.POST.get("size", "medium")  # Default to medium for pizzas
-            quantity = int(request.POST.get("quantity", 1))  # Default to 1 if no quantity provided
-            toppings_raw = request.POST.get("toppings_json", "[]") or "[]"  # Get toppings JSON or default to empty list
+            # Default to medium for pizzas
+            size = request.POST.get("size", "medium")
+            # Default to 1 if no quantity provided
+            quantity = int(request.POST.get("quantity", 1))
+            # Get toppings JSON or default to empty list
+            toppings_raw = request.POST.get("toppings_json", "[]") or "[]"
             toppings_json = json.loads(toppings_raw)
 
             # Load the current cart from the session
@@ -143,12 +218,14 @@ def add_to_cart(request):
             # Check the category and retrieve the corresponding product and price
             if category == "pizza":
                 product = get_object_or_404(Pizza, id=product_id)
-                price = Decimal(str(getattr(product, f"price_{size}", product.price_medium)))
+                price = Decimal(
+                    str(getattr(product, f"price_{size}", product.price_medium)))
 
                 # Calculate the price of selected toppings
                 if toppings_json:
                     toppings = Topping.objects.filter(name__in=toppings_json)
-                    toppings_price = sum(Decimal(str(topping.price)) for topping in toppings)
+                    toppings_price = sum(Decimal(str(topping.price))
+                                         for topping in toppings)
             elif category == "wing":
                 product = get_object_or_404(Wing, id=product_id)
                 price = Decimal(str(product.price))
@@ -175,7 +252,8 @@ def add_to_cart(request):
                 # Add a new item to the cart
                 cart[product_key] = {
                     'name': product.name,
-                    'price': str(total_price),  # Store as a string to avoid JSON serialization issues
+                    # Store as a string to avoid JSON serialization issues
+                    'price': str(total_price),
                     'quantity': quantity,
                     'category': category,
                     'size': size if category == "pizza" else None,
@@ -232,7 +310,8 @@ def update_cart(request):
                 if quantity > 0:
                     cart[product_key]['quantity'] = quantity
                 else:
-                    del cart[product_key]  # Remove item if quantity is set to 0
+                    # Remove item if quantity is set to 0
+                    del cart[product_key]
 
                 # Save updated cart to session
                 save_cart(request, cart)
@@ -266,8 +345,6 @@ def calculate_cart_totals(cart):
     return {'items': cart, 'total_price': round(total_price, 2)}
 
 
-
-
 # Return the current cart data in JSON format for the frontend
 def get_cart_data(request):
     cart = get_cart(request)
@@ -286,3 +363,33 @@ def cart_view(request):
 def clear_cart(request):
     request.session['cart'] = {}  # Clear the cart in session
     return redirect('menu')
+
+
+
+@csrf_exempt
+def create_payment_intent(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            email = data.get("email")
+            
+            request.session["customer_email"] = email
+
+            cart = request.session.get("cart", {})
+            if not cart:
+                return JsonResponse({"error": "Cart is empty"}, status=400)
+
+            total = sum(float(item["price"]) * item["quantity"] for item in cart.values())
+            amount_in_cents = int(total * 100)
+
+            intent = stripe.PaymentIntent.create(
+                amount=amount_in_cents,
+                currency="usd",
+                receipt_email=email,
+                metadata={"integration_check": "accept_a_payment"},
+            )
+
+            return JsonResponse({"clientSecret": intent.client_secret})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+

@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Success</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <link rel="icon" type="image/png" href="{% static 'logo/favicon.png' % }" />
+  </head>
+  <body>
+    {% include 'navbar.html' %}
+
+    <div class="container py-5 text-center">
+      <h2 class="mb-4">🎉 Payment Successful!</h2>
+      <p>Thank you for your order! We’ve sent a confirmation to your email.</p>
+      <h4 class="mt-4">Order Summary:</h4>
+      <ul class="list-group mt-3">
+        {% for item in items %}
+        <li class="list-group-item">{{ item }}</li>
+        {% endfor %}
+      </ul>
+      <p class="mt-3"><strong>Total Paid: {{ total }}</strong></p>
+      <a href="{% url 'menu' %}" class="btn btn-primary mt-4">Back to Menu</a>
+    </div>
+
+    <!-- footer -->
+    {% comment %} {% include 'footer.html' %} {% endcomment %}
+  </body>
+</html>

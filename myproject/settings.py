@@ -1,11 +1,19 @@
 from pathlib import Path
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = "django-insecure-nt6pf7wxvdecs1kk254&kd&=r(pjf39ngsspbd*hr8hugrlwg="
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+
+SEND_GRID_API_KEY = os.getenv('SEND_GRID_API_KEY')
 
 DEBUG = True
 
@@ -14,6 +22,7 @@ ALLOWED_HOSTS = [
     "www.6thstreetpizza.store",
     "5.181.218.74",
     "localhost",
+    "127.0.0.1",
     "files.6thstreetpizza.store",
 ]
 

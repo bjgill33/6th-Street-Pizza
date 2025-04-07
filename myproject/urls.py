@@ -21,7 +21,7 @@ from django.urls import path
 from . import views
 from accounts.views import update_cart
 
-from accounts.views import home, menu, payment, add_to_cart, get_cart, remove_from_cart, clear_cart, update_cart, get_cart_data
+from accounts.views import home, menu, payment, add_to_cart, get_cart, remove_from_cart, clear_cart, update_cart, get_cart_data, payment_success, create_payment_intent
 
 
 urlpatterns = [
@@ -34,5 +34,8 @@ urlpatterns = [
     path('cart/update/', update_cart, name='update_cart'),
     path('cart/data/', get_cart_data, name='get_cart_data'),
     path('cart/clear/', clear_cart, name='clear_cart'),
+    path('payment-success/', payment_success, name='payment_success'),
+    path("create-payment-intent/", create_payment_intent, name="create_payment_intent"),
+
 ]
 

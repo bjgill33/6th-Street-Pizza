@@ -257,6 +257,10 @@ class Order(models.Model):
     state = models.CharField(max_length=2, choices=US_STATES, blank=False, null=False, default="NC")
     zip_code = models.CharField(max_length=10, blank=False, null=False)
     phone = models.CharField(max_length=15, blank=False, null=False)
+    
+    # Payment Details (Stripe)
+    stripe_payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
+    stripe_charge_id = models.CharField(max_length=255, null=True, blank=True)
 
     # Payment Details
     card_type = models.CharField(
@@ -279,7 +283,7 @@ class Order(models.Model):
         help_text="Last 4 digits of the card number."
     )
     card_expiry_date = models.CharField(max_length=7, null=True, blank=True, help_text="MM/YYYY format.")
-    paypal_email = models.EmailField(null=True, blank=True, help_text="PayPal email if PayPal was used.")
+    
 
     def get_masked_card_number(self):
         """ Returns a masked credit card number like ****-****-****-1234 """
