@@ -96,6 +96,10 @@ Run server
 python manage.py runserver
 ```
 
+## Deploying
+
+To deploy to the server, simply commit your changes and push (or merge) them to the production branch.
+
 ## Additional Notes
 
 This information is not needed for regular setup.
@@ -110,4 +114,20 @@ To dump the database of a Django installation:
 
 ```shell
 python manage.py dumpdata --natural-foreign --natural-primary -e contenttypes -e auth.Permission -e admin.Logentry > dump.json
+```
+
+As a further note, the script that runs on the server to sync the repo is as follows
+
+```bash
+#!/bin/bash
+systemctl stop gunicorn
+rm -r /var/www/pizza
+# Don't clone all of the git history, only the latest revision of the production branch
+git clone --depth 1 -b Production https://github.com/bjgill33/6th-Street-Pizza /var/www/pizza
+chown -R pizza:pizza /var/www/pizza
+sudo -u pizza sh -c "(cd /var/www/pizza;pipenv install)"
+# Pipenv doesn't support production only dependencies so this is the hack.
+sudo -u pizza sh -c "(cd /var/www/pizza;pipenv install mysqlclient)"
+sudo -u pizza sh -c "(cd /var/www/pizza;pipenv run python manage.py migrate)"
+systemctl start gunicorn
 ```
