@@ -173,12 +173,25 @@
 
           </script>
 
-          <!-- Delivery Address -->
-          <div class="col-md-4">
-            <h4>Delivery Address</h4>
-            <form>
 
-              <div class="mb-3">
+<div class="mb-4">
+  <h5>Order Type</h5>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="orderType" id="carryoutRadio" value="carryout">
+    <label class="form-check-label" for="carryoutRadio">Carryout</label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="orderType" id="deliveryRadio" value="delivery" checked>
+    <label class="form-check-label" for="deliveryRadio">Delivery</label>
+  </div>
+</div>
+
+
+
+
+          <!-- Delivery Address -->
+<div class="col-md-4">
+                <div class="mb-3">
                 <label class="form-label">Email Address</label>
                 <input
                   type="email"
@@ -190,9 +203,16 @@
                   placeholder="example@example.com"
                   required
                 />
-
+</div>
 
               </div>
+            <div id="deliverySection">
+
+          <div class="col-md-4">
+            <h4>Delivery Address</h4>
+            <form>
+
+
               <div class="mb-3">
                 <label class="form-label">Full Name</label>
                 <input
@@ -273,6 +293,25 @@
             </form>
           </div>
 
+            </div>
+
+
+
+
+            <div id="carryoutSection" style="display: none;">
+  <h5>Carryout Location</h5>
+  <div class="card mt-3 p-3 text-start">
+    <p><strong>Store Number:</strong> {{ store_info.store_number }}</p>
+    <p><strong>Address:</strong> {{ store_info.address }}</p>
+    <p><strong>City:</strong> {{ store_info.city }}</p>
+    <p><strong>State:</strong> {{ store_info.state }}</p>
+    <p><strong>Zip Code:</strong> {{ store_info.zip_code }}</p>
+    <p><strong>Phone:</strong> {{ store_info.phone }}</p>
+  </div>
+</div>
+
+
+
           <!-- Payment Details -->
           <div class="col-md-4">
             <h4>Payment Details</h4>
@@ -289,11 +328,11 @@
   <div>
     <img
       class="pt-4 d-block mx-auto img-fluid"
-      src="{% static 'images/payment_options.png' %}"
+      src="{% static 'images/payments.png' %}"
       alt="Accepted Payment Methods"
     />
   </div>
-  <img src="https://www.6thstreetpizza.store/static/images/payments.jpg" style="width: 40%;">
+
 </form>
 
 
@@ -393,8 +432,39 @@ function showLocationModal() {
   window.toppingsList = {{ toppings_json|safe }};
 </script>
 
+
+
+<!--toggle between delivery and carryout-->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const carryoutRadio = document.getElementById("carryoutRadio");
+  const deliveryRadio = document.getElementById("deliveryRadio");
+  const carryoutSection = document.getElementById("carryoutSection");
+  const deliverySection = document.getElementById("deliverySection");
+
+  function toggleSections() {
+    if (carryoutRadio.checked) {
+      carryoutSection.style.display = "block";
+      deliverySection.style.display = "none";
+    } else {
+      carryoutSection.style.display = "none";
+      deliverySection.style.display = "block";
+    }
+  }
+
+  carryoutRadio.addEventListener("change", toggleSections);
+  deliveryRadio.addEventListener("change", toggleSections);
+  toggleSections(); // Initial state
+});
+</script>
+
+<!--End toggle between delivery and carryout-->
+
+
     <!--  Global Variables (rendered server-side) -->
     <script src="{% static 'js/stripePaymentHandler.js' %}"></script>
+    <script src="{% static 'js/orderTypeHandler.js' %}"></script>
     <script src="{% static 'js/cartHandler.js' %}"></script>
     <script src="{% static 'js/orderModalGlobals.js' %}"></script>
     <script src="{% static 'js/locationsModal.js' %}"></script>
