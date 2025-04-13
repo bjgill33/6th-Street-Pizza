@@ -6,8 +6,9 @@ name = "pypi"
 [packages]
 django = "5.1.6"
 gunicorn = "23.0.0"
+sendgrid = "*"
 #mysqlclient = "2.2.7"
-
+stripe = "*"
 
 [dev-packages]
 selenium = "*"
