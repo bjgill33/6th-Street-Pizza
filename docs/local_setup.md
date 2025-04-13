@@ -98,7 +98,7 @@ python manage.py runserver
 
 ## Deploying
 
-To deploy to the server, simply commit your changes and push (or merge) them to the production branch.
+To deploy to the server, simply commit your changes and push (or merge) them to the production branch. It should (through github actions) automatically redeploy the server.
 
 ## Additional Notes
 
