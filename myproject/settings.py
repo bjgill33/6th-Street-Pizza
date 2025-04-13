@@ -124,6 +124,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 if os.path.isfile(BASE_DIR / "local-dev.txt"):
+    STRIPE_SECRET_KEY = "local-dev"
     print("Starting with local development settings")
     # Override settings in dev environment
     DATABASES = {
