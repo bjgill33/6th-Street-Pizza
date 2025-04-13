@@ -1,24 +1,67 @@
-# Import Django utilities for rendering templates and handling HTTP responses
+# --------------------------------------------
+#  Django Framework Utilities
+# --------------------------------------------
+
+# Used to render HTML templates and fetch DB objects safely
 from django.shortcuts import render, get_object_or_404
+
+# Allows returning JSON responses (e.g., for AJAX calls)
 from django.http import JsonResponse
 
-# Import models for pizzas, wings, drinks, desserts, and toppings
-from accounts.models import Pizza, Wing, Drink, Dessert, Topping
+# Enables cross-site request forgery exemption (for POST APIs like Stripe)
+from django.views.decorators.csrf import csrf_exempt
 
-# Set up logging to track errors or warnings in the application
+# Used to show messages to the user (e.g., "Order submitted successfully")
+from django.contrib import messages
+
+# Provides access to global project settings (Stripe key, email, etc.)
+from django.conf import settings
+
+# --------------------------------------------
+#  Database Models
+# --------------------------------------------
+
+# Models for food items and restaurant locations
+from accounts.models import Pizza, Wing, Drink, Dessert, Topping
+from .models import RestaurantLocation
+
+# --------------------------------------------
+#  Logging & Data Handling
+# --------------------------------------------
+
+# Enables application logging for debugging or error tracking
 import logging
 
-# Import JSON encoder to serialize Python objects for frontend consumption
+# Used to safely encode complex data types (like Decimal) to JSON
 from django.core.serializers.json import DjangoJSONEncoder
+
+# Handles general-purpose JSON parsing/handling
 import json
 
-# Import Decimal to ensure proper handling of currency and numeric precision
+# Handles currency math precisely without floating point issues
 from decimal import Decimal
 
-# Create a logger to log warnings and errors
+# Initialize logger for this file/module
 logger = logging.getLogger(__name__)
 
-from django.views.decorators.csrf import csrf_exempt
+# --------------------------------------------
+#  SendGrid Email Service
+# --------------------------------------------
+
+# Used to send transactional emails (order confirmation)
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+# --------------------------------------------
+#  Stripe Payment Integration
+# --------------------------------------------
+
+# Stripe Python SDK to handle payments securely
+import stripe
+
+# Set Stripe's secret key from your Django settings
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 
 # Helper function to retrieve an object safely or log a warning if not found
@@ -104,8 +147,165 @@ def menu(request):
 
 
 # Render the payment page
+from .models import RestaurantLocation
+
+
+def get_all_toppings():
+    toppings_qs = Topping.objects.all()
+    return [
+        {
+            "name": topping.name,
+            "price": float(topping.price)  # convert Decimal to float
+        }
+        for topping in toppings_qs
+    ]
+
+
 def payment(request):
-    return render(request, 'payment.html')
+    location_key = request.session.get("selected_location")
+    store_info = None
+    print("Store Location in Session:", location_key)
+
+    if location_key:
+        store_number = location_key.replace("store", "")
+        try:
+            store_info = RestaurantLocation.objects.get(store_number=store_number)
+        except RestaurantLocation.DoesNotExist:
+            store_info = None
+
+    if not store_info:
+        messages.error(request, "No location selected. Please go back and choose a store.")
+        return redirect("home")
+
+    context = {
+        "store_info": store_info,
+        "toppings_json": json.dumps(get_all_toppings(), default=str),
+        "stripe_public_key": settings.STRIPE_PUBLIC_KEY
+    }
+
+    return render(request, "payment.html", context)
+
+
+# create_payment_intent
+
+@csrf_exempt
+def create_payment_intent(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            email = data.get("email")
+
+            request.session["customer_email"] = email
+
+            cart = request.session.get("cart", {})
+            if not cart:
+                return JsonResponse({"error": "Cart is empty"}, status=400)
+
+            total = sum(float(item["price"]) * item["quantity"] for item in cart.values())
+            amount_in_cents = int(total * 100)
+
+            intent = stripe.PaymentIntent.create(
+                amount=amount_in_cents,
+                currency="usd",
+                receipt_email=email,
+                metadata={"integration_check": "accept_a_payment"},
+            )
+
+            return JsonResponse({"clientSecret": intent.client_secret})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+# Within this is some code for trying to set up SendGrid
+
+@csrf_exempt
+def payment_success(request):
+    # Retrieve delivery and cart data from session
+    cart = request.session.get('cart', {})
+
+    sg = SendGridAPIClient(settings.SEND_GRID_API_KEY)
+
+    # Retrieve metadata sent via Stripe
+    customer_email = request.session.get("customer_email", "customer@example.com")
+
+    # order summary
+    order_lines = []
+    total_price = 0
+    for item in cart.values():
+        line = f"{item['quantity']}x {item['name']} ({item.get('size', '')})"
+        if item.get('toppings'):
+            line += f" - Toppings: {', '.join(item['toppings'])}"
+        item_total = float(item['price']) * item['quantity']
+        total_price += item_total
+        line += f" - ${item_total:.2f}"
+        order_lines.append(line)
+
+    order_summary = "\n".join(order_lines)
+    total_formatted = f"${total_price:.2f}"
+
+    # Sending confirmation email
+    message = Mail(
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to_emails=customer_email,
+        subject="Your 6th Street Pizza Order Confirmation",
+        plain_text_content=f"Thank you for your order! 🍕"
+    )
+
+    try:
+        sg.send(message)
+    except Exception as e:
+        print("SendGrid error:", e)
+
+    # Retrieve store info from session
+    location_key = request.session.get("selected_location")
+    store_info = None
+    if location_key:
+        store_number = location_key.replace("store", "")
+        store_info = RestaurantLocation.objects.filter(store_number=store_number).first()
+
+    # Clear the cart from session
+    request.session['cart'] = {}
+
+    # Render payment_success with order and location info
+    return render(request, "payment_success.html", {
+        "total": total_formatted,
+        "items": order_lines,
+        "store_info": store_info,
+    })
+
+
+# set location for pickup and delivery
+@csrf_exempt
+def set_location(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            location = data.get('location')
+            if location in ['store1', 'store2', 'store3']:
+                request.session['selected_location'] = location
+                return JsonResponse({'status': 'ok'})
+            else:
+                return JsonResponse({'error': 'Invalid location'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+# Retrieve store info
+def get_locations(request):
+    locations = RestaurantLocation.objects.filter(status="Open")
+    data = []
+    for loc in locations:
+        data.append({
+            "id": loc.id,
+            "store_number": loc.store_number,
+            "address": loc.address,
+            "city": loc.city,
+            "state": loc.state,
+            "zip": loc.zip_code,
+            "phone": loc.phone
+        })
+    return JsonResponse({"locations": data})
 
 
 # Retrieve the cart from the session or return an empty cart if it does not exist
@@ -264,8 +464,6 @@ def calculate_cart_totals(cart):
         total_price += subtotal
 
     return {'items': cart, 'total_price': round(total_price, 2)}
-
-
 
 
 # Return the current cart data in JSON format for the frontend
