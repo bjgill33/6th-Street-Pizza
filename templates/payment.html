@@ -1,7 +1,8 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
   <head>
+      <script src="https://js.stripe.com/v3/"></script>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Secure Checkout - 6th Street Pizza</title>
@@ -23,26 +24,72 @@
   </head>
 
   <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
-      <div class="container">
-      <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'logo/6th_street_pizza.png' %}" alt="6th Street Pizza Logo"/></a>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <!-- Brand Logo -->
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <img src="{% static 'logo/6th_street_pizza.png' %}" alt="6th Street Pizza Logo"/>
+    </a>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="{% url 'menu' %}">Menu</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Locations</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Coupons</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Rewards</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Tracker</a></li>
-          <li class="nav-item position-relative"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
-                <i class="bi bi-cart text-white" style="font-size: 1.5rem"></i>
-                <span id="cartBadge" class="cart-badge">0</span></a>
-          </li>
-        </ul>
-      </div>
-      </div>
-    </nav>
+    <!-- Mobile Toggler -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'menu' %}">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Locations</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Coupons</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Tracker</a></li>
+        <li class="nav-item position-relative">
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
+            <i class="bi bi-cart text-white" style="font-size: 1.5rem"></i>
+            <span id="cartBadge" class="cart-badge">0</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Store location display -->
+{# Display selected store info if location is set in session #}
+{% if store_info %}
+  <div class="alert alert-info text-center" role="alert">
+    <strong>Selected Location:</strong><br>
+    Store {{ store_info.store_number }} – {{ store_info.address }}, {{ store_info.city }}, {{ store_info.state }} {{ store_info.zip_code }}<br>
+    Phone: {{ store_info.phone }}<br>
+
+    {# Button to allow user to change location manually #}
+    <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="showLocationModal()">
+      Change Store Location
+    </button>
+  </div>
+
+{# If no location is selected, prompt user to select one #}
+{% else %}
+  <div class="alert alert-warning text-center" role="alert">
+    No store location selected.
+    <a href="javascript:void(0);" onclick="showLocationModal()">
+      Click here to choose a location and complete your order.
+    </a>
+  </div>
+{% endif %}
+
+
+
 
     <!-- Secure Checkout Section -->
     <section class="checkout-section py-5">
@@ -230,61 +277,108 @@
           <div class="col-md-4">
             <h4>Payment Details</h4>
 
-            <form>
-              <div class="mb-3">
-                <label class="form-label">Card Number</label>
-                <input
-                  type="tel"
-                  id="cardNumber"
-                  name="cardNumber"
-                  class="form-control"
-                  placeholder="1234 5678 9012 3456"
-                  pattern="[0-9\s]{13,19}"
-                  maxlength="19"
-                  required
-                />
+            <form id="payment-form">
+  <div class="mb-3">
+    <label for="card-element" class="form-label">Card Details</label>
+    <div id="card-element" class="form-control"></div>
+    <div id="card-errors" class="text-danger mt-2" role="alert"></div>
+  </div>
 
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Expiration Date</label>
-                <input
-                  type="text"
-                  id="expiryDate"
+  <button type="submit" class="btn btn-primary w-100">Pay Now</button>
 
-                  name="expiryDate"
-                  class="form-control"
-                  placeholder="MM/YY"
-                  pattern="(0[1-9]|1[0-2])\/\d{2}"
-                  required/>
+  <div>
+    <img
+      class="pt-4 d-block mx-auto img-fluid"
+      src="{% static 'images/payment_options.png' %}"
+      alt="Accepted Payment Methods"
+    />
+  </div>
+  <img src="https://www.6thstreetpizza.store/static/images/payments.jpg" style="width: 40%;">
+</form>
 
-              </div>
-              <div class="mb-3">
-                <label class="form-label">CVV</label>
-                <input
-                  type="text"
-                  id="cvv"
 
-                  name="cvv"
-                  class="form-control"
-                  placeholder="123"
-                  pattern="[0-9]{3,4}"
-                  required
-                />
-              </div>
-              <button type="submit" class="btn btn-primary w-100">Pay Now</button>
 
-              <div>
-                <img
-                  class="pt-4 d-block mx-auto img-fluid"
-                  src="{% static 'images/payment_options.png' %}"
-                  alt="Accepted Payment Methods"
-                />
-              </div>
-            </form>
           </div>
         </div>
       </div>
     </section>
+
+
+    <!-- Location Modal -->
+<!-- Modal wrapper with fade transition -->
+<div class="modal fade" id="locationModal" tabindex="-1" aria-hidden="true">
+
+  <!-- Vertically centered dialog -->
+  <div class="modal-dialog modal-dialog-centered">
+
+    <!-- Modal content area -->
+    <div class="modal-content text-center">
+
+      <!-- Modal header with optional close button -->
+      <div class="modal-header">
+        <!-- Modal title, takes full width -->
+        <h5 class="modal-title w-100">Choose Your Store</h5>
+
+        <!-- Close button only shown if store_info is present -->
+        {% if store_info %}
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        {% endif %}
+      </div>
+
+      <!-- Modal body where store buttons will be dynamically injected -->
+      <div class="modal-body" id="store-buttons-container">
+        <p>Loading locations...</p> <!-- Placeholder while locations load -->
+      </div>
+
+    </div> <!-- End modal-content -->
+  </div> <!-- End modal-dialog -->
+</div> <!-- End modal -->
+
+
+
+    <script>
+  // Allow manual triggering of the location modal (e.g., "Change Location" button)
+function showLocationModal() {
+  const modalElement = document.getElementById('locationModal');
+  const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+  modal.show();
+}
+    </script>
+
+
+
+
+    <!-- temp fix -- remove second button -->
+    <!-- second button is created because I wanted to force user to select location on home page and only show X when a location already exists in the django session-->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+      const modalHeader = document.querySelector("#locationModal .modal-header");
+
+      if (modalHeader) {
+        const closeButtons = modalHeader.querySelectorAll(".btn-close");
+
+        // Remove all but the first close button
+        if (closeButtons.length > 1) {
+          for (let i = 1; i < closeButtons.length; i++) {
+            closeButtons[i].remove();
+          }
+        }
+      }
+    }, 300); // Wait 300ms before executing (adjust if needed)
+  });
+</script>
+
+
+#
+<script>
+  // Inject Stripe public key dynamically from Django
+  window.stripePublicKey = "{{ stripe_public_key }}";
+</script>
+<script src="{% static 'js/stripePaymentHandler.js' %}"></script>
+
+
+
 
 
     <footer class="footer bg-dark text-white py-4 mt-5">
@@ -299,7 +393,8 @@
   window.toppingsList = {{ toppings_json|safe }};
 </script>
 
-    <!-- 🧩 Global Variables (rendered server-side) -->
+    <!--  Global Variables (rendered server-side) -->
+    <script src="{% static 'js/stripePaymentHandler.js' %}"></script>
     <script src="{% static 'js/cartHandler.js' %}"></script>
     <script src="{% static 'js/orderModalGlobals.js' %}"></script>
     <script src="{% static 'js/locationsModal.js' %}"></script>
