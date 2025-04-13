@@ -63,7 +63,6 @@ import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
-
 # Helper function to retrieve an object safely or log a warning if not found
 def safe_get(model, name):
     item = model.objects.filter(name=name).first()
@@ -193,10 +192,23 @@ def create_payment_intent(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
+
+            # Always store email and order type
             email = data.get("email")
-
+            order_type = data.get("orderType", "delivery")  # fallback to 'delivery'
             request.session["customer_email"] = email
+            request.session["order_type"] = order_type
 
+            # Conditionally store delivery information
+            if order_type == "delivery":
+                request.session["full_name"] = data.get("fullName")
+                request.session["phone"] = data.get("phone")
+                request.session["address"] = data.get("address")
+                request.session["city"] = data.get("city")
+                request.session["state"] = data.get("state")
+                request.session["zip"] = data.get("zip")
+
+            # Get cart and calculate total
             cart = request.session.get("cart", {})
             if not cart:
                 return JsonResponse({"error": "Cart is empty"}, status=400)
@@ -204,6 +216,7 @@ def create_payment_intent(request):
             total = sum(float(item["price"]) * item["quantity"] for item in cart.values())
             amount_in_cents = int(total * 100)
 
+            # Create Stripe payment intent
             intent = stripe.PaymentIntent.create(
                 amount=amount_in_cents,
                 currency="usd",
@@ -222,6 +235,15 @@ def create_payment_intent(request):
 def payment_success(request):
     # Retrieve delivery and cart data from session
     cart = request.session.get('cart', {})
+    order_type = request.session.get("order_type", "delivery")  # ✅ Grab order type
+
+    # Get delivery info if available
+    full_name = request.session.get("full_name")
+    phone = request.session.get("phone")
+    address = request.session.get("address")
+    city = request.session.get("city")
+    state = request.session.get("state")
+    zip_code = request.session.get("zip")
 
     sg = SendGridAPIClient(settings.SEND_GRID_API_KEY)
 
@@ -271,6 +293,15 @@ def payment_success(request):
         "total": total_formatted,
         "items": order_lines,
         "store_info": store_info,
+        "order_type": request.session.get("order_type"),
+        "email": request.session.get("customer_email"),
+        "full_name": request.session.get("full_name"),
+        "phone": request.session.get("phone"),
+        "address": request.session.get("address"),
+        "city": request.session.get("city"),
+        "state": request.session.get("state"),
+        "zip": request.session.get("zip"),
+        "toppings_json": json.dumps(get_all_toppings(), default=str),
     })
 
 
