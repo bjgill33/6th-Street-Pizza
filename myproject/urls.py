@@ -18,10 +18,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from . import views
+from accounts import views
+# from . import views
 from accounts.views import update_cart
+from accounts.views import set_location
 
-from accounts.views import home, menu, payment, add_to_cart, get_cart, remove_from_cart, clear_cart, update_cart, get_cart_data
+from accounts.views import home, menu, payment, add_to_cart, get_cart, remove_from_cart, clear_cart, update_cart, get_cart_data, set_location, payment_success, create_payment_intent
 
 
 urlpatterns = [
@@ -34,5 +36,10 @@ urlpatterns = [
     path('cart/update/', update_cart, name='update_cart'),
     path('cart/data/', get_cart_data, name='get_cart_data'),
     path('cart/clear/', clear_cart, name='clear_cart'),
+    path("set-location/", set_location, name="set-location"),
+    path('locations/', views.get_locations, name='get_locations'),
+    path('payment-success/', payment_success, name='payment_success'),
+    path("create-payment-intent/", create_payment_intent, name="create_payment_intent"),
+
 ]
 
