@@ -5,7 +5,7 @@ If at any point in this process you encounter an error, ping me (Alexander) on t
 Prerequisites:
 
 - Git
-- Python 3
+- Python 3.12
 - Pip
 - VsCode or other text editor
 
@@ -19,15 +19,15 @@ Clone the repo to your computer
 git clone https://github.com/bjgill33/6th-Street-Pizza
 ```
 
-Switch branches to the production branch (this step may change in the future)
+Switch branches to the `main` branch.
 
 ```shell
-git switch Production
+git switch main
 ```
 
 ### Setup Env (Step 2)
 
-Open up the terminal/command prompt. In VsCode this can be easily done py pressing `CTRL+~`
+Open up the terminal/command prompt. In VSCode this can be easily done py pressing `CTRL+~`
 
 Install pipenv to your computer. [Pipenv](https://pipenv.pypa.io/en/latest/) manages the virtual environment.
 
@@ -95,7 +95,7 @@ python manage.py runserver
 
 ## Deploying
 
-To deploy to the server, simply commit your changes and push (or merge) them to the production branch. It should (through github actions) automatically redeploy the server.
+To deploy to the server, simply commit your changes and push (or merge) them to the production branch. It should (through github actions) automatically redeploy the server. Be sure to read [Merging Production](./merging_production.md)
 
 ## Additional Notes
 
