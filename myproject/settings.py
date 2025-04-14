@@ -8,8 +8,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
 env = {
-    **dotenv_values(".env.dev"),  # load shared development variables
-    **dotenv_values(".env.prod"),  # load sensitive variables
+    **dotenv_values(BASE_DIR / ".env.dev"),  # load shared development variables
+    **dotenv_values(BASE_DIR / ".env.prod"),  # load sensitive variables
 }
 
 SECRET_KEY = env["DJANGO_SECRET_KEY"]
