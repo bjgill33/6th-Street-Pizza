@@ -4,10 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-selenium = "*"
+django = "5.1.6"
+gunicorn = "23.0.0"
+sendgrid = "*"
+#mysqlclient = "2.2.7"
+stripe = "*"
+python-dotenv = "1.1.0"
 
 [dev-packages]
+selenium = "*"
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"
+
+[pipenv]
+allow_prereleases = true
