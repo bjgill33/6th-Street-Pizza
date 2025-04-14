@@ -9,6 +9,7 @@ gunicorn = "23.0.0"
 sendgrid = "*"
 #mysqlclient = "2.2.7"
 stripe = "*"
+python-dotenv = "1.1.0"
 
 [dev-packages]
 selenium = "*"

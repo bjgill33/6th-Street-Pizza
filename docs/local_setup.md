@@ -51,9 +51,6 @@ pipenv shell
 
 If everything worked in step 2, django should already be installed. All that remains is to setup the database.
 
-In your editor, create a file called `local-dev.txt`. Create this file in the same directory which has `Pipfile` and `.gitignore.
-The existence of this file makes the django installation use a local SQLite3 database instead of MySQL which is used on the production server.
-
 Create database migrations
 
 ```shell
@@ -124,6 +121,7 @@ systemctl stop gunicorn
 rm -r /var/www/pizza
 # Don't clone all of the git history, only the latest revision of the production branch
 git clone --depth 1 -b Production https://github.com/bjgill33/6th-Street-Pizza /var/www/pizza
+cp .env.prod /var/www/pizza/.env.prod
 chown -R pizza:pizza /var/www/pizza
 sudo -u pizza sh -c "(cd /var/www/pizza;pipenv install)"
 # Pipenv doesn't support production only dependencies so this is the hack.

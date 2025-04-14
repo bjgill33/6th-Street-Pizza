@@ -1,11 +1,20 @@
 from pathlib import Path
+from dotenv import load_dotenv, dotenv_values
 import os
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load Environmental Variables
+load_dotenv()
 
-SECRET_KEY = "django-insecure-nt6pf7wxvdecs1kk254&kd&=r(pjf39ngsspbd*hr8hugrlwg="
+env = {
+    **dotenv_values(".env.dev"),  # load shared development variables
+    **dotenv_values(".env.prod"),  # load sensitive variables
+}
+
+SECRET_KEY = env["DJANGO_SECRET_KEY"]
+
+STRIPE_SECRET_KEY = env["STRIPE_SECRET_KEY"]
 
 DEBUG = True
 
@@ -64,19 +73,35 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 
 # Database
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "6thstreetpizza_db",
-        "USER": "pizza_admin8749",
-        "PASSWORD": "Str0ng!Pass#2025934",
-        "HOST": "127.0.0.1",  # Use 'localhost' if Django and MySQL are on the same server
-        "PORT": "3306",  # Default MySQL port
-        "OPTIONS": {
-            "charset": "utf8mb4",  # Ensure full Unicode support
-        },
+DATABASE_TYPE = env["DATABASE_TYPE"]
+
+DATABASES = {}
+
+if DATABASE_TYPE == "SQLITE":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+elif DATABASE_TYPE == "MYSQL":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": env["MYSQL_DB_NAME"],
+            "USER": env["MYSQL_DB_USER"],
+            "PASSWORD": env["MYSQL_DB_PASSWORD"],
+            "HOST": env["MYSQL_DB_HOST"],
+            "PORT": env["MYSQL_DB_PORT"],
+            "OPTIONS": {
+                "charset": "utf8mb4",  # Ensure full Unicode support
+            },
+        }
+    }
+else:
+    raise Exception(
+        f'Unknown configuration value in .env: DATABASE_TYPE. DATABASE_TYPE="{DATABASE_TYPE}"\n\t Valid values include: SQLITE, MYSQL'
+    )
 
 # Password validation
 
@@ -122,14 +147,4 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
-if os.path.isfile(BASE_DIR / "local-dev.txt"):
-    STRIPE_SECRET_KEY = "local-dev"
-    print("Starting with local development settings")
-    # Override settings in dev environment
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+# Local database override
