@@ -13,17 +13,7 @@ Prerequisites:
 
 ### Clone repo (Step 1)
 
-Clone the repo to your computer
-
-```shell
-git clone https://github.com/bjgill33/6th-Street-Pizza
-```
-
-Switch branches to the `main` branch.
-
-```shell
-git switch main
-```
+Follow the steps in [Cloning Repo](./cloning_repo.md)
 
 ### Setup Env (Step 2)
 

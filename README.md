@@ -4,7 +4,12 @@ This is the Repository for the 6th Street Pizza Company
 
 ## Documentation
 
-Technical project documentation is in the /docs directory. [Local Setup](./docs/local_setup.md) is recommended to begin with.
+Technical project documentation is in the /docs directory.
+
+These two pieces of documentation should help getting started:
+
+- [Cloning Repo](./docs/cloning_repo.md)
+- [Local Setup](./docs/local_setup.md)
 
 Team project documentation is in the /team-docs directory
 
