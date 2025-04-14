@@ -7,8 +7,7 @@ Prerequisites
 
 - Git
 - VSCode (or other code editor)
-
-This guide assumes you have the project git repository cloned and setup on your computer. See [Local Setup](./local_setup.md)
+- Git repository setup [Cloning Repo](./cloning_repo.md)
 
 ## Step 1
 
@@ -66,3 +65,45 @@ nothing to commit, working tree clean
 ```
 
 ## Step 5
+
+In the production branch, run
+
+```shell
+git merge main
+```
+
+This command takes all changes in the `main` branch, and merges them into the `Production` branch.
+
+You should see something like this:
+
+```shell
+Updating 53c5e53..2b2a3e7
+Fast-forward
+ docs/merging_production.md | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+```
+
+NOTE: This should _hopefully_ work without issue.
+If you see anything in the output about "Merge Conflicts" then something went wrong somewhere along the line.
+If you're confident in your git abilities and understand the source of the conflict, you can resolve the conflict yourself.
+Otherwise, feel free to contact me (Alexander) and I can help you sort it out.
+No really, please do contact me; this stuff can be frustrating.
+
+## Step 6
+
+Now, the production branch has the same contents as the main branch, but only on your local computer.
+Next, push the changes to the GitHub repository.
+
+```shell
+git push origin Production
+```
+
+## Step 7
+
+You're now done with merging `main` into `Production`.
+
+You can now switch back to the main branch, (or your own personal working branch).
+
+```shell
+git switch main
+```
