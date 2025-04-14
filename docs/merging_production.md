@@ -52,7 +52,7 @@ Click "Confirm merge"
 
 ### Finished
 
-You are now done merging the main branch into the production branch.
+You are now done merging the `main` branch into the `Production` branch.
 
 ## Hard Way
 
