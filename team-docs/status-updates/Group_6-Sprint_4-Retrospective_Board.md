@@ -10,4 +10,4 @@
 
 ## TRELLO Sprint Retrospective Board
 ![Trello Board Screenshot](https://github.com/bjgill33/6th-Street-Pizza/blob/Production/team-docs/status-updates/Group_6-Sprint_4-Retrospective_Board.png)
-[Link to Trello Retrospective Board]()
+[Link to Trello Retrospective Board](https://trello.com/b/RHKeUCrM/group-6-sprint-4-sprint-retrospective-board)
