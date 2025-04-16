@@ -43,7 +43,14 @@
     <!-- Main Content -->
     <div class="container py-5">
       <h2 class="text-center mb-4">Payment Successful</h2>
-      <p class="text-center">Thank you for your order! A confirmation email has been sent.</p>
+      <p class="text-center">Thank you for your order! A confirmation email has been sent to <strong>{{ email }}</strong></p>
+
+      <!-- Tracking ID -->
+      {% if tracking_id %}
+        <div class="alert alert-success text-center">
+          <strong>Your Tracking ID:</strong> {{ tracking_id }}
+        </div>
+      {% endif %}
 
       <!-- Location Info -->
       {% if store_info %}
@@ -68,25 +75,24 @@
         </div>
       {% endif %}
 
-<!-- Delivery Address -->
-{% if order_type == "delivery" %}
-  <div class="alert alert-warning">
-    <h5>Delivery Address:</h5>
-    <ul class="list-unstyled">
-      <li><strong>Name:</strong> {{ full_name }}</li>
-      <li><strong>Email:</strong> {{ email }}</li>
-      <li><strong>Phone:</strong> {{ phone }}</li>
-      <li><strong>Street:</strong> {{ address }}</li>
-      <li><strong>City:</strong> {{ city }}</li>
-      <li><strong>State:</strong> {{ state }}</li>
-      <li><strong>Zip:</strong> {{ zip }}</li>
-      {% if special_instructions %}
-        <li><strong>Instructions:</strong> {{ special_instructions }}</li>
+      <!-- Delivery Address -->
+      {% if order_type == "delivery" %}
+        <div class="alert alert-warning">
+          <h5>Delivery Address:</h5>
+          <ul class="list-unstyled">
+            <li><strong>Name:</strong> {{ full_name }}</li>
+            <li><strong>Email:</strong> {{ email }}</li>
+            <li><strong>Phone:</strong> {{ phone }}</li>
+            <li><strong>Street:</strong> {{ address }}</li>
+            <li><strong>City:</strong> {{ city }}</li>
+            <li><strong>State:</strong> {{ state }}</li>
+            <li><strong>Zip:</strong> {{ zip }}</li>
+            {% if special_instructions %}
+              <li><strong>Instructions:</strong> {{ special_instructions }}</li>
+            {% endif %}
+          </ul>
+        </div>
       {% endif %}
-    </ul>
-  </div>
-{% endif %}
-
 
       <!-- Order Table -->
       <h4 class="mt-4">Your Order</h4>
