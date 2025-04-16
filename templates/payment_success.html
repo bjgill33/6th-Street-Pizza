@@ -26,8 +26,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a class="nav-link" href="{% url 'menu' %}">Menu</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Locations</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Coupons</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'store_locations' %}">Locations</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'coupons' %}">Coupons</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'track_order' %}">Tracker</a></li>
             <li class="nav-item position-relative">
               <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
