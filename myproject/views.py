@@ -23,7 +23,10 @@ from django.conf import settings
 
 # Models for food items and restaurant locations
 from accounts.models import Pizza, Wing, Drink, Dessert, Topping
+from accounts.models import OrderPizza, OrderWings, OrderDrinks, OrderDesserts
+
 from .models import RestaurantLocation
+from .models import Order
 
 # --------------------------------------------
 #  Logging & Data Handling
@@ -207,6 +210,7 @@ def create_payment_intent(request):
                 request.session["city"] = data.get("city")
                 request.session["state"] = data.get("state")
                 request.session["zip"] = data.get("zip")
+                request.session["special_instructions"] = data.get("specialInstructions")
 
             # Get cart and calculate total
             cart = request.session.get("cart", {})
@@ -235,7 +239,15 @@ def create_payment_intent(request):
 def payment_success(request):
     # Retrieve delivery and cart data from session
     cart = request.session.get('cart', {})
-    order_type = request.session.get("order_type", "delivery")  # ✅ Grab order type
+    order_type_raw = request.session.get("order_type", "delivery").lower()
+
+    # Normalize delivery_method with fallback mapping
+    order_type_map = {
+        "pickup": "Pickup",
+        "carryout": "Pickup",
+        "delivery": "Delivery"
+    }
+    delivery_method = order_type_map.get(order_type_raw, "Pickup")
 
     # Get delivery info if available
     full_name = request.session.get("full_name")
@@ -244,65 +256,190 @@ def payment_success(request):
     city = request.session.get("city")
     state = request.session.get("state")
     zip_code = request.session.get("zip")
+    special_instructions = request.session.get("special_instructions")
+
+    # Convert full state name to 2-letter abbreviation if needed
+    state_abbreviations = {
+        "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA",
+        "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE", "Florida": "FL", "Georgia": "GA",
+        "Hawaii": "HI", "Idaho": "ID", "Illinois": "IL", "Indiana": "IN", "Iowa": "IA",
+        "Kansas": "KS", "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+        "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS",
+        "Missouri": "MO", "Montana": "MT", "Nebraska": "NE", "Nevada": "NV", "New Hampshire": "NH",
+        "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY", "North Carolina": "NC",
+        "North Dakota": "ND", "Ohio": "OH", "Oklahoma": "OK", "Oregon": "OR", "Pennsylvania": "PA",
+        "Rhode Island": "RI", "South Carolina": "SC", "South Dakota": "SD", "Tennessee": "TN",
+        "Texas": "TX", "Utah": "UT", "Vermont": "VT", "Virginia": "VA", "Washington": "WA",
+        "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY"
+    }
+    state_abbr = state_abbreviations.get(state, state[:2].upper())
 
     sg = SendGridAPIClient(settings.SEND_GRID_API_KEY)
-
-    # Retrieve metadata sent via Stripe
     customer_email = request.session.get("customer_email", "customer@example.com")
 
-    # order summary
+    # Build order lines and initial estimated total
     order_lines = []
-    total_price = 0
+    estimated_total = 0
     for item in cart.values():
         line = f"{item['quantity']}x {item['name']} ({item.get('size', '')})"
         if item.get('toppings'):
             line += f" - Toppings: {', '.join(item['toppings'])}"
         item_total = float(item['price']) * item['quantity']
-        total_price += item_total
+        estimated_total += item_total
         line += f" - ${item_total:.2f}"
         order_lines.append(line)
-
     order_summary = "\n".join(order_lines)
-    total_formatted = f"${total_price:.2f}"
 
-    # Sending confirmation email
-    message = Mail(
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to_emails=customer_email,
-        subject="Your 6th Street Pizza Order Confirmation",
-        plain_text_content=f"Thank you for your order! 🍕"
-    )
-
-    try:
-        sg.send(message)
-    except Exception as e:
-        print("SendGrid error:", e)
-
-    # Retrieve store info from session
+    # Get restaurant location
     location_key = request.session.get("selected_location")
     store_info = None
     if location_key:
         store_number = location_key.replace("store", "")
         store_info = RestaurantLocation.objects.filter(store_number=store_number).first()
 
-    # Clear the cart from session
+    # Create order (initial estimated total, will recalculate after item save)
+    order = Order.objects.create(
+        name=full_name,
+        phone=phone,
+        address=address,
+        city=city,
+        state=state_abbr,
+        zip_code=zip_code,
+        email=customer_email,
+        delivery_method=delivery_method,
+        special_instructions=special_instructions,
+        total_price=estimated_total,
+        card_last_four=request.session.get("card_last4"),
+        card_expiry_date=request.session.get("card_expiry"),
+        card_type=request.session.get("card_type") or "Unknown",
+        restaurant_location=store_info,
+        payment_confirmation="Paid"
+    )
+
+    # Save each cart item to the DB
+    for key, item in cart.items():
+        category = item.get("category")
+        quantity = item.get("quantity", 1)
+
+        if category == "pizza":
+            pizza_id = int(key.split("_")[1])
+            size = item.get("size", "medium")
+            toppings = item.get("toppings", [])
+            pizza = Pizza.objects.filter(id=pizza_id).first()
+            topping_objs = Topping.objects.filter(name__in=toppings)
+
+            OrderPizza.objects.create(
+                order=order,
+                pizza=pizza,
+                size=size,
+                quantity=quantity,
+                topping_1=topping_objs[0] if len(topping_objs) > 0 else None,
+                topping_2=topping_objs[1] if len(topping_objs) > 1 else None,
+                topping_3=topping_objs[2] if len(topping_objs) > 2 else None
+            )
+
+        elif category == "wing":
+            wing_id = int(key.split("_")[1])
+            wing = Wing.objects.filter(id=wing_id).first()
+            OrderWings.objects.create(order=order, wing=wing, quantity=quantity)
+
+        elif category == "drink":
+            drink_id = int(key.split("_")[1])
+            drink = Drink.objects.filter(id=drink_id).first()
+            OrderDrinks.objects.create(order=order, drink=drink, quantity=quantity)
+
+        elif category == "dessert":
+            dessert_id = int(key.split("_")[1])
+            dessert = Dessert.objects.filter(id=dessert_id).first()
+            OrderDesserts.objects.create(order=order, dessert=dessert, quantity=quantity)
+
+    # Final total after all items saved
+    order.total_price = order.calculate_total_price()
+    order.save(update_fields=["total_price"])
+    total_formatted = f"${order.total_price:.2f}"
+
+    # Send confirmation email
+    message = Mail(
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to_emails=customer_email,
+        subject="Your 6th Street Pizza Order Confirmation",
+        plain_text_content=f"Thank you for your order! 🍕\n\nOrder Summary:\n{order_summary}\n\nTotal: {total_formatted}"
+    )
+    try:
+        sg.send(message)
+    except Exception as e:
+        print("SendGrid error:", e)
+
+    # Clear cart
     request.session['cart'] = {}
 
-    # Render payment_success with order and location info
+    # Render payment success page
     return render(request, "payment_success.html", {
         "total": total_formatted,
         "items": order_lines,
         "store_info": store_info,
-        "order_type": request.session.get("order_type"),
-        "email": request.session.get("customer_email"),
-        "full_name": request.session.get("full_name"),
-        "phone": request.session.get("phone"),
-        "address": request.session.get("address"),
-        "city": request.session.get("city"),
-        "state": request.session.get("state"),
-        "zip": request.session.get("zip"),
+        "order_type": delivery_method,
+        "email": customer_email,
+        "full_name": full_name,
+        "phone": phone,
+        "address": address,
+        "city": city,
+        "state": state_abbr,
+        "zip": zip_code,
+        "card_last4": request.session.get("card_last4"),
+        "card_expiry": request.session.get("card_expiry"),
+        "special_instructions": special_instructions,
         "toppings_json": json.dumps(get_all_toppings(), default=str),
     })
+
+
+# Store payment info
+@csrf_exempt
+def store_payment_details(request):
+    print("🛑 Stripe called /store-payment-details/")
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            intent_id = data.get("paymentIntentId")
+            intent = stripe.PaymentIntent.retrieve(
+                intent_id, expand=["charges.data.payment_method_details"]
+            )
+
+            charge = intent.charges.data[0]
+            card_info = charge.payment_method_details.get("card", {})
+
+            # Fallbacks in case Stripe omits something
+            brand = card_info.get("brand", "Unknown")
+            last4 = card_info.get("last4", "")
+            exp_month = card_info.get("exp_month")
+            exp_year = card_info.get("exp_year")
+            expiry = f"{exp_month}/{exp_year}" if exp_month and exp_year else ""
+
+            # Save in session
+            request.session["card_type"] = brand
+            request.session["card_last4"] = last4
+            request.session["card_expiry"] = expiry
+            request.session.modified = True  # ensure session is saved
+
+            return JsonResponse({"status": "stored"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request"}, status=405)
+
+
+# Save card info into the session
+@csrf_exempt
+def store_card_info(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            request.session["card_last4"] = data.get("last4")
+            request.session["card_expiry"] = data.get("expiry")
+            return JsonResponse({"status": "stored"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"error": "Invalid request"}, status=405)
 
 
 # set location for pickup and delivery
