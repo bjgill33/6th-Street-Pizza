@@ -67,6 +67,17 @@ import stripe
 # Set Stripe's secret key from your Django settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+
+# Render the Locations page
+def locations_page(request):
+    return render(request, "store_locations.html")
+
+
+# Render the Coupons page
+def coupons_page(request):
+    return render(request, "coupons.html")
+
+
 # -------------------------------------------------------------
 # Helper: Convert structured order data into readable summary
 # -------------------------------------------------------------
@@ -110,9 +121,6 @@ def render_order_summary(order_data):
 
     # Return all items joined with line breaks
     return "\n".join(items)
-
-
-
 
 
 # Helper function to retrieve an object safely or log a warning if not found
@@ -252,9 +260,9 @@ def track_order(request):
     # Default context to render the page
     # -------------------------------
     context = {
-        "tracking_attempted": True,      # Used to hide/show results in the template
-        "order_found": False,            # Flag to control display of order info
-        "tracking_id": tracking_id       # Echo back the entered ID
+        "tracking_attempted": True,  # Used to hide/show results in the template
+        "order_found": False,  # Flag to control display of order info
+        "tracking_id": tracking_id  # Echo back the entered ID
     }
 
     # -------------------------------
@@ -286,7 +294,7 @@ def track_order(request):
                 "store": store,
                 "order_type": order.delivery_method.lower(),
                 "status": "Order Received",  # we can later pull this from DB or enum
-                "progress_percent": 75,      # update later
+                "progress_percent": 75,  # update later
                 "order_summary_parsed": parsed_items,
                 "total": f"${total_paid:.2f}" if total_paid else "$0.00"
             })
