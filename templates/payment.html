@@ -10,11 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{% static 'style.css' %}"/>
     <link rel="icon" type="image/png" href="{% static 'logo/favicon.png' % }"/>
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3y0aTpDcrzntE4cyPhDLKvHTHC76uN64&callback=initMaps" async
-      defer
-    ></script>
-    <script src="{% static 'js/pay_validation.js' %}" async></script>
+    <script src="{% static 'js/pay_validation.js' %}" defer></script>
+
     <script>
       function initMaps() {
         console.log("Google Maps initialized");
@@ -287,6 +284,18 @@
                   placeholder="90210"
                   required
                 />
+
+                  <div class="mb-3">
+                <label class="form-label">Special Instructions</label>
+                <textarea
+                    id="specialInstructions"
+                    name="specialInstructions"
+                    class="form-control"
+                    rows="3"
+                    placeholder="e.g., Ring the doorbell twice, leave at the front desk"
+                  ></textarea>
+                </div>
+
 
 
               </div>

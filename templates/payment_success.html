@@ -68,21 +68,25 @@
         </div>
       {% endif %}
 
-      <!-- Delivery Address -->
-      {% if order_type == "delivery" %}
-        <div class="alert alert-warning">
-          <h5>Delivery Address:</h5>
-          <ul class="list-unstyled">
-            <li><strong>Name:</strong> {{ full_name }}</li>
-            <li><strong>Email:</strong> {{ email }}</li>
-            <li><strong>Phone:</strong> {{ phone }}</li>
-            <li><strong>Street:</strong> {{ address }}</li>
-            <li><strong>City:</strong> {{ city }}</li>
-            <li><strong>State:</strong> {{ state }}</li>
-            <li><strong>Zip:</strong> {{ zip }}</li>
-          </ul>
-        </div>
+<!-- Delivery Address -->
+{% if order_type == "delivery" %}
+  <div class="alert alert-warning">
+    <h5>Delivery Address:</h5>
+    <ul class="list-unstyled">
+      <li><strong>Name:</strong> {{ full_name }}</li>
+      <li><strong>Email:</strong> {{ email }}</li>
+      <li><strong>Phone:</strong> {{ phone }}</li>
+      <li><strong>Street:</strong> {{ address }}</li>
+      <li><strong>City:</strong> {{ city }}</li>
+      <li><strong>State:</strong> {{ state }}</li>
+      <li><strong>Zip:</strong> {{ zip }}</li>
+      {% if special_instructions %}
+        <li><strong>Instructions:</strong> {{ special_instructions }}</li>
       {% endif %}
+    </ul>
+  </div>
+{% endif %}
+
 
       <!-- Order Table -->
       <h4 class="mt-4">Your Order</h4>
