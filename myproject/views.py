@@ -190,6 +190,32 @@ def payment(request):
     return render(request, "payment.html", context)
 
 
+# Track the order
+
+def track_order(request):
+    tracking_id = request.GET.get('tracking_id')
+    context = {
+        "tracking_attempted": True,
+        "order_found": False,
+        "tracking_id": tracking_id
+    }
+
+    if tracking_id:
+        order = Order.objects.filter(tracking_id=tracking_id).select_related('restaurant_location').first()
+        if order:
+            store = order.restaurant_location
+            context.update({
+                "order_found": True,
+                "order": order,
+                "store": store,
+                "order_type": order.delivery_method.lower(),
+                "status": "Order Received",  # Change this if you track actual progress
+                "progress_percent": 75  # Dynamically adjust if you add more stages
+            })
+
+    return render(request, "tracking.html", context)
+
+
 # create_payment_intent
 
 @csrf_exempt
