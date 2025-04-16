@@ -54,6 +54,8 @@ logger = logging.getLogger(__name__)
 # Used to send transactional emails (order confirmation)
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from django.core.mail import send_mail, EmailMessage
+from django.utils.html import strip_tags
 
 # --------------------------------------------
 #  Stripe Payment Integration
@@ -274,7 +276,6 @@ def payment_success(request):
     }
     state_abbr = state_abbreviations.get(state, state[:2].upper())
 
-    sg = SendGridAPIClient(settings.SEND_GRID_API_KEY)
     customer_email = request.session.get("customer_email", "customer@example.com")
 
     # Build order lines and initial estimated total
@@ -297,7 +298,7 @@ def payment_success(request):
         store_number = location_key.replace("store", "")
         store_info = RestaurantLocation.objects.filter(store_number=store_number).first()
 
-    # Create order (initial estimated total, will recalculate after item save)
+    # Create order
     order = Order.objects.create(
         name=full_name,
         phone=phone,
@@ -316,7 +317,7 @@ def payment_success(request):
         payment_confirmation="Paid"
     )
 
-    # Save each cart item to the DB
+    # Save each cart item
     for key, item in cart.items():
         category = item.get("category")
         quantity = item.get("quantity", 1)
@@ -353,27 +354,86 @@ def payment_success(request):
             dessert = Dessert.objects.filter(id=dessert_id).first()
             OrderDesserts.objects.create(order=order, dessert=dessert, quantity=quantity)
 
-    # Final total after all items saved
+    # Final total update
     order.total_price = order.calculate_total_price()
     order.save(update_fields=["total_price"])
     total_formatted = f"${order.total_price:.2f}"
 
-    # Send confirmation email
-    message = Mail(
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to_emails=customer_email,
-        subject="Your 6th Street Pizza Order Confirmation",
-        plain_text_content=f"Thank you for your order! 🍕\n\nOrder Summary:\n{order_summary}\n\nTotal: {total_formatted}"
-    )
-    try:
-        sg.send(message)
-    except Exception as e:
-        print("SendGrid error:", e)
+    # Construct HTML email
+    from django.core.mail import EmailMessage
+    from django.utils.html import strip_tags
 
-    # Clear cart
+    html_message = f"""
+    <div style='font-family:Arial,sans-serif;'>
+        <h2 style='color:#BB2D3B;'>Thank you for your order!</h2>
+        <p><strong>Tracking ID:</strong> {order.tracking_id}</p>
+
+        <h3 style='color:#BB2D3B;'>Order Fulfilled By:</h3>
+        <table style='width:100%;background:#F8F9FA;'>
+            <tr><td><strong>Store #:</strong></td><td>{store_info.store_number}</td></tr>
+            <tr><td><strong>Address:</strong></td><td>{store_info.address}</td></tr>
+            <tr><td><strong>City:</strong></td><td>{store_info.city}</td></tr>
+            <tr><td><strong>State:</strong></td><td>{store_info.state}</td></tr>
+            <tr><td><strong>Zip Code:</strong></td><td>{store_info.zip_code}</td></tr>
+            <tr><td><strong>Phone:</strong></td><td>{store_info.phone}</td></tr>
+            <tr><td><strong>Manager:</strong></td><td>{store_info.manager_name}</td></tr>
+        </table><br>
+    """
+
+    if delivery_method.lower() == "delivery":
+        html_message += f"""
+        <h3 style='color:#BB2D3B;'>Delivery Details:</h3>
+        <table style='width:100%;background:#F8F9FA;'>
+            <tr><td><strong>Name:</strong></td><td>{full_name}</td></tr>
+            <tr><td><strong>Phone:</strong></td><td>{phone}</td></tr>
+            <tr><td><strong>Street:</strong></td><td>{address}</td></tr>
+            <tr><td><strong>City:</strong></td><td>{city}</td></tr>
+            <tr><td><strong>State:</strong></td><td>{state}</td></tr>
+            <tr><td><strong>Zip:</strong></td><td>{zip_code}</td></tr>
+            <tr><td><strong>Instructions:</strong></td><td>{special_instructions or 'N/A'}</td></tr>
+        </table><br>
+        """
+
+    html_message += f"""
+    <h3 style='color:#BB2D3B;'>Order Summary:</h3>
+    <p><strong>Order Type:</strong> {delivery_method}</p>
+    <table style='width:100%;border:1px solid #BB2D3B;background:#F8F9FA;'>
+        <thead><tr style='background:#BB2D3B;color:#fff;'><th>Item Description</th></tr></thead>
+        <tbody>{''.join([f"<tr><td>{line}</td></tr>" for line in order_lines])}</tbody>
+    </table>
+    <p><strong>Total Paid:</strong> {total_formatted}</p>
+    <p>If you have any questions, call us at <strong>{store_info.phone}</strong>.</p>
+    <p style='color:#999;'>&copy; 2025 6th Street Pizza</p>
+    </div>
+    """
+
+    try:
+        email = EmailMessage(
+            subject="Your 6th Street Pizza Order Confirmation",
+            body=html_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[customer_email],
+        )
+        email.content_subtype = "html"
+        email.send()
+    except Exception as e:
+        print("Email to customer failed:", e)
+
+    if store_info and hasattr(store_info, "email") and store_info.email:
+        try:
+            store_email = EmailMessage(
+                subject=f"New Order - Store #{store_info.store_number}",
+                body=html_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[store_info.email],
+            )
+            store_email.content_subtype = "html"
+            store_email.send()
+        except Exception as e:
+            print("Email to restaurant failed:", e)
+
     request.session['cart'] = {}
 
-    # Render payment success page
     return render(request, "payment_success.html", {
         "total": total_formatted,
         "items": order_lines,
@@ -390,6 +450,7 @@ def payment_success(request):
         "card_expiry": request.session.get("card_expiry"),
         "special_instructions": special_instructions,
         "toppings_json": json.dumps(get_all_toppings(), default=str),
+        "tracking_id": order.tracking_id,
     })
 
 
