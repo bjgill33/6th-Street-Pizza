@@ -67,6 +67,53 @@ import stripe
 # Set Stripe's secret key from your Django settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+# -------------------------------------------------------------
+# Helper: Convert structured order data into readable summary
+# -------------------------------------------------------------
+def render_order_summary(order_data):
+    items = []  # This will hold each item line for the final summary
+
+    # -----------------------------
+    # Pizzas Section
+    # -----------------------------
+    for pizza in order_data.get("pizzas", []):
+        # Format toppings if they exist
+        topping_str = (
+            f" - Toppings: {', '.join(pizza.get('toppings', []))}"
+            if pizza.get("toppings") else ""
+        )
+        # Example: 2x Pepperoni Pizza (Large) - Toppings: Mushrooms, Olives
+        items.append(
+            f"{pizza['quantity']}x {pizza['name']} ({pizza['size'].capitalize()}){topping_str}"
+        )
+
+    # -----------------------------
+    # Wings Section
+    # -----------------------------
+    for wing in order_data.get("wings", []):
+        # Example: 1x 6 Buffalo Chicken Wings
+        items.append(f"{wing['quantity']}x {wing['flavor']}")
+
+    # -----------------------------
+    # Drinks Section
+    # -----------------------------
+    for drink in order_data.get("drinks", []):
+        # Example: 1x 2 Liter Coca-Cola
+        items.append(f"{drink['quantity']}x {drink['name']}")
+
+    # -----------------------------
+    # Desserts Section
+    # -----------------------------
+    for dessert in order_data.get("desserts", []):
+        # Example: 2x Cheesecake
+        items.append(f"{dessert['quantity']}x {dessert['name']}")
+
+    # Return all items joined with line breaks
+    return "\n".join(items)
+
+
+
+
 
 # Helper function to retrieve an object safely or log a warning if not found
 def safe_get(model, name):
@@ -192,27 +239,61 @@ def payment(request):
 
 # Track the order
 
+# -------------------------------------------------------
+# View: Track an order using the tracking_id from URL
+# -------------------------------------------------------
 def track_order(request):
+    # -------------------------------
+    # Get tracking ID from the request
+    # -------------------------------
     tracking_id = request.GET.get('tracking_id')
+
+    # -------------------------------
+    # Default context to render the page
+    # -------------------------------
     context = {
-        "tracking_attempted": True,
-        "order_found": False,
-        "tracking_id": tracking_id
+        "tracking_attempted": True,      # Used to hide/show results in the template
+        "order_found": False,            # Flag to control display of order info
+        "tracking_id": tracking_id       # Echo back the entered ID
     }
 
+    # -------------------------------
+    # If a tracking ID was submitted
+    # -------------------------------
     if tracking_id:
+        # Try to find the order in the database
         order = Order.objects.filter(tracking_id=tracking_id).select_related('restaurant_location').first()
+
+        # -------------------------------
+        # If order is found, populate context
+        # -------------------------------
         if order:
-            store = order.restaurant_location
+            store = order.restaurant_location  # Store that fulfilled the order
+
+            # Parse JSON string from order_summary field
+            order_summary_data = json.loads(order.order_summary) if order.order_summary else {}
+
+            # Extract and format items ordered using helper
+            parsed_items = render_order_summary(order_summary_data.get("order", {}))
+
+            # Get total paid from summary (fallback to model field if missing)
+            total_paid = order_summary_data.get("total_price", order.total_price)
+
+            # Update context with all order details
             context.update({
                 "order_found": True,
                 "order": order,
                 "store": store,
                 "order_type": order.delivery_method.lower(),
-                "status": "Order Received",  # Change this if you track actual progress
-                "progress_percent": 75  # Dynamically adjust if you add more stages
+                "status": "Order Received",  # we can later pull this from DB or enum
+                "progress_percent": 75,      # update later
+                "order_summary_parsed": parsed_items,
+                "total": f"${total_paid:.2f}" if total_paid else "$0.00"
             })
 
+    # -------------------------------
+    # Render the tracking page
+    # -------------------------------
     return render(request, "tracking.html", context)
 
 
