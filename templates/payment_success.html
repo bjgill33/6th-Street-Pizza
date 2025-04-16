@@ -43,7 +43,7 @@
     <!-- Main Content -->
     <div class="container py-5">
       <h2 class="text-center mb-4">Payment Successful</h2>
-      <p class="text-center">Thank you for your order! A confirmation email has been sent to <strong>{{ email }}</strong></p>
+      <p class="text-center">Thank you for your order! A confirmation email has been sent to <strong>{{ email }}</strong>.</p>
 
       <!-- Tracking ID -->
       {% if tracking_id %}
@@ -76,7 +76,7 @@
       {% endif %}
 
       <!-- Delivery Address -->
-      {% if order_type == "delivery" %}
+      {% if order_type == "Delivery" %}
         <div class="alert alert-warning">
           <h5>Delivery Address:</h5>
           <ul class="list-unstyled">
@@ -91,6 +91,8 @@
               <li><strong>Instructions:</strong> {{ special_instructions }}</li>
             {% endif %}
           </ul>
+          <p class="mt-3"><strong>This order is being delivered to:</strong> {{ address }}, {{ city }}, {{ state }} {{ zip }}</p>
+            <p>If the delivery address or your order is incorrect, please call the store immediately at {{ store_info.phone }}</p>
         </div>
       {% endif %}
 
