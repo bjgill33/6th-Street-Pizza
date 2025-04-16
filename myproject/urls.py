@@ -23,7 +23,7 @@ from accounts import views
 from accounts.views import update_cart
 from accounts.views import set_location
 
-from accounts.views import home, menu, payment, add_to_cart, get_cart, remove_from_cart, clear_cart, update_cart, get_cart_data, set_location, payment_success, create_payment_intent, track_order
+from accounts.views import home, menu, payment, add_to_cart, get_cart, remove_from_cart, clear_cart, update_cart, get_cart_data, set_location, payment_success, create_payment_intent, track_order, locations_page, coupons_page
 
 
 urlpatterns = [
@@ -41,6 +41,9 @@ urlpatterns = [
     path('payment-success/', payment_success, name='payment_success'),
     path("create-payment-intent/", create_payment_intent, name="create_payment_intent"),
     path("tracking/", track_order, name="track_order"),
+    path("store-locations/", locations_page, name="store_locations"),
+    path("coupons/", coupons_page, name="coupons"),
+
 
 
 ]
