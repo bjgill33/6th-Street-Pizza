@@ -16,21 +16,19 @@
 ## STATUS UPDATE DETAILS
 
 ### Tasks Scheduled for this week:
-1. Clean up `Production` GitHub branch to ensure efficient merging with `main` branch
-2. Continue Development of the CI/CD pipeline.
-3. Continue to develope 'order tracking' functionality.
-4. Continue to develope 'store location' selection functionality.
-5. Continue to implement system to take secure credit card payments using **Stripe**.
+1. Add Coupons/Discounts feature to application's functionality.
+2. Security - Add environmental variables to secure API keys.
+3. Complete payment system and order confirmation (email).
 6. Create Successful tests for applications Django admin database.
 10. Report Bugs within the GitHub Issues section of repository.
 11. Continue code creation documentation.
 
 ### Tasks Completed this week (by Name):
-1. **Arthur H.:** Fixed bug issues with the menu page.  Checkout page was incorporated with the Stripe payment tools.  Location selections incorporated into web application interface. Cleaned up user interface by deleting tabs that were not specified in the user requirements as per the SRS documentation.
-2. **Alex B.:** Finished CI/CD Deploy pipeline to automatically deploy git commits to production server. Merged Github Main and Production branches reconciling wildly different contents. Setup 3rd-Party dependencies to run on local (dev) environment without API keys.
-3. **William S.:** Developed the payment system for the application using **Stripe**. Assisted Arthur with integrating the payment system with the checkout system. Testing and integration to the Django database is in progress. Sending email confirmations for orders placed is in progress.
-4. **Elham J.:** Continued testing the Django admin database. Fixed bug issues in the orders 'get price' calculations.
-5. **Tony S.:** Continued tests on the Djano application admin page. Continued Testing of the Shopping Cart and Ordering System. Cannot confirm any other contribution due to non-communication with the team.  
+1. **Arthur H.:** Added Coupons/Discount features to applications functionality. Completed email confirmations for orders placed.
+2. **Alex B.:** Security - added environmental variables to secure API keys for the application. Provided documentation for the team to merge `Production` branch with `main` branch successfully. Tested applications email confirmations for orders placed. Continued addressing bug issues within application. Working on the **Installation Guide** for the projects documentation and presentation.
+3. **William S.:** Finalized the developed the payment system for the application using **Stripe**. Assisted Arthur with integrating the payment system with the checkout system. Completed email confirmations for orders placed. Continued addressing bug issues within application.
+4. **Elham J.:** Continued testing the Django admin database. Working on the **database schema** for the projects documentation and presentation. 
+5. **Tony S.:** Continued tests on the Djano application admin page. Continued Testing of the Shopping Cart and Ordering System. Working on the **User Manual** for the projects documentation and presentation.   
   
  
 ### Problems/Challenges/Roadblocks (specify “resolved/not resolved” status):
