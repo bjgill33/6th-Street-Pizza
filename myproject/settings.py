@@ -33,6 +33,7 @@ ALLOWED_HOSTS = [
     "5.181.218.74",
     "localhost",
     "files.6thstreetpizza.store",
+    "127.0.0.1",
 ]
 
 
