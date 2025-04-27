@@ -5,24 +5,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Locations - 6th Street Pizza</title>
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'style.css' %}" />
     <link rel="icon" type="image/png" href="{% static 'logo/favicon.png' %}" />
+          <!-- Applied discount pulled from session -->
+<script>window.appliedDiscount = {{ request.session.applied_discount|default:"null"|safe }};</script>
   </head>
 
   <body>
+    <!-- Hidden form to make CSRF token available -->
+    <form style="display:none;">{% csrf_token %}</form>
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
       <div class="container">
         <a class="navbar-brand" href="{% url 'home' %}">
           <img src="{% static 'logo/6th_street_pizza.png' %}" alt="6th Street Pizza Logo" />
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a class="nav-link" href="{% url 'menu' %}">Menu</a></li>
@@ -40,29 +44,105 @@
       </div>
     </nav>
 
+    <!-- Store Banner -->
+    {% if store_info %}
+    <div class="alert alert-info text-center" role="alert" id="storeBanner">
+      <strong>Selected Location:</strong><br>
+      Store {{ store_info.store_number }} – {{ store_info.address }}, {{ store_info.city }}, {{ store_info.state }} {{ store_info.zip_code }}<br>
+      Phone: {{ store_info.phone }}<br>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center" role="alert" id="storeBanner">
+      No store location selected.
+    </div>
+    {% endif %}
 
-      <div style="height: 200px;"></div>
+    <div class="container py-5">
+      <h2 class="text-center mb-4">Choose Your Store</h2>
+      <div class="row g-4">
+        {% for store in stores %}
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <img src="https://placehold.co/600x200?text=Store+{{ store.store_number }}+Map" class="card-img-top" alt="Store {{ store.store_number }} Map">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Store {{ store.store_number }}</h5>
+              <p class="card-text mb-4">
+                <strong>Address:</strong> {{ store.address }}, {{ store.city }}, {{ store.state }} {{ store.zip_code }}<br>
+                <strong>Phone:</strong> {{ store.phone }}<br>
+                <strong>Manager:</strong> {{ store.manager_name }}
+              </p>
+              <button class="btn btn-outline-primary mt-auto w-100" onclick="setStoreLocation('store{{ store.store_number }}', '{{ store.store_number }}', '{{ store.address }}', '{{ store.city }}', '{{ store.state }}', '{{ store.zip_code }}', '{{ store.phone }}')">
+                Make This My Current Store
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
 
+    <script>
+      function setStoreLocation(location, number, address, city, state, zip, phone) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
 
-    <!-- Footer -->
+        if (!csrfToken) {
+          console.error("CSRF token not found.");
+          return;
+        }
+
+        fetch("/set-location/", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+          },
+          body: JSON.stringify({ location })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "ok") {
+            const banner = document.getElementById("storeBanner");
+            banner.className = "alert alert-info text-center";
+            banner.innerHTML = `
+              <strong>Selected Location:</strong><br>
+              Store ${number} – ${address}, ${city}, ${state} ${zip}<br>
+              Phone: ${phone}<br>
+            `;
+          } else {
+            alert("Error: " + data.error);
+          }
+        })
+        .catch(error => {
+          console.error("Error setting store location:", error);
+        });
+      }
+    </script>
+
+    <div style="height: 200px;"></div>
     <footer class="footer bg-dark text-white py-4 mt-5">
       <div class="container text-center">
         <p>&copy; 2025 6th Street Pizza. All Rights Reserved.</p>
-      </div>
+
+</div>
     </footer>
 
-    <script>
-      window.csrfTokenHTML = `{% csrf_token %}`;
-      window.toppingsList = {{ toppings_json|safe }};
-    </script>
+<script>
 
-    <!--  Global Variables (rendered server-side) -->
-    <script src="{% static 'js/stripePaymentHandler.js' %}"></script>
+  //  CSRF Token for Secure POST Requests (used in fetch, forms, etc.)
+  window.csrfTokenHTML = `{% csrf_token %}`;
+
+  //  Toppings Data (sent from Django to front-end JavaScript)
+  window.toppingsList = {{ toppings_json|safe }};
+
+</script>
+
+
     <script src="{% static 'js/orderTypeHandler.js' %}"></script>
     <script src="{% static 'js/cartHandler.js' %}"></script>
     <script src="{% static 'js/orderModalGlobals.js' %}"></script>
     <script src="{% static 'js/locationsModal.js' %}"></script>
-    <script src="{% static 'js/orderModal.js' %}"></script>
+    <script src="{% static 'js/discountHandler.js' %}"></script>
     <script src="{% static 'js/orderModalHandler.js' %}"></script>
     <script src="{% static 'js/locations.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

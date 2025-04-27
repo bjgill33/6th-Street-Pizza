@@ -16,6 +16,9 @@
 
         <link rel="icon" type="image/png" href="{% static 'logo/favicon.png' %}">
 
+            <!-- Applied discount pulled from session -->
+<script>window.appliedDiscount = {{ request.session.applied_discount|default:"null"|safe }};</script>
+
         <script>
   document.addEventListener("DOMContentLoaded", function () {
     window.csrfTokenHTML = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -303,34 +306,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         </section>
             <!-- Footer -->
             <footer class="footer bg-dark text-white py-4">
@@ -467,14 +442,17 @@
                 </div>
             </section>
 
-            <script>
-  // 🔗 Global data injected from Django context
+<script>
+  //  CSRF Token for Secure POST Requests (used in fetch, forms, etc.)
   window.csrfTokenHTML = `{% csrf_token %}`;
+
+  //  Toppings Data (sent from Django to front-end JavaScript)
   window.toppingsList = {{ toppings_json|safe }};
+
 </script>
 
 
-
+        <script src="{% static 'js/discountHandler.js' %}"></script>
     <script src="{% static 'js/cartHandler.js' %}"></script>
     <script src="{% static 'js/orderModalGlobals.js' %}"></script>
     <script src="{% static 'js/locationsModal.js' %}"></script>
