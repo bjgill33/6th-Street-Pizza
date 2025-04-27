@@ -13,6 +13,14 @@ const cartModalHTML = `
       <div class="modal-body">
         <ul id="cartItems" class="list-group"></ul>
         <div class="mt-3 text-end">
+
+<!-- Discount Banner -->
+<div id="cartDiscountBanner" class="alert alert-success d-none mt-3 text-start">
+  <strong>Coupon Applied:</strong> <span id="cartDiscountName"></span><br>
+  Discount: <span id="cartDiscountValue"></span>
+  <button class="btn btn-sm btn-outline-danger ms-2" id="clearCartDiscount">Clear</button>
+</div>
+
           <strong>Total: $<span id="cartTotal">0.00</span></strong>
         </div>
       </div>
@@ -87,8 +95,8 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
           <div class="text-end">
             <span class="item-total" data-key="${key}">$${subtotal.toFixed(2)}</span>
-            <button class="btn btn-sm btn-outline-danger mt-1 remove-item" data-key="${key}">
-              🗑️
+            <button class="btn btn-sm btn-danger mt-1 remove-item" data-key="${key}">
+              Remove
             </button>
           </div>
         </div>
@@ -97,20 +105,42 @@ document.addEventListener("DOMContentLoaded", function () {
       list.appendChild(li);
     }
 
-    // Recalculate the cart total and update DOM
     calculateCartTotal(cart);
     updateCartBadge(cart);
 
-    // Add event listeners for item removal
     document.querySelectorAll(".remove-item").forEach(btn => {
       btn.addEventListener("click", async function () {
         const key = this.dataset.key;
         await removeCartItem(key);
       });
     });
+
+    const clearBtn = document.getElementById("clearCartDiscount");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        fetch("/clear-coupon/", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.cleared) {
+              window.appliedDiscount = null;
+
+              const discountBanners = document.querySelectorAll("#cartDiscountBanner, #modalDiscountBanner");
+              discountBanners.forEach(banner => banner.classList.add("d-none"));
+
+              fetchCart(); // Re-fetch cart
+            }
+          })
+          .catch((err) => console.error("Failed to clear discount:", err));
+      });
+    }
   }
 
-  // Listen for Quantity Changes and Update Cart
   document.addEventListener("change", async function (e) {
     if (e.target.classList.contains("cart-quantity")) {
       const itemKey = e.target.dataset.key;
@@ -119,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Remove Cart Item
   async function removeCartItem(key) {
     const formData = new FormData();
     formData.append("product_key", key);
@@ -144,9 +173,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.getElementById("cartModal").addEventListener("show.bs.modal", fetchCart);
   fetchCart();
+
+  // Moved modal open trigger here (clean structure)
+  const cartIcon = document.querySelector("[data-bs-target='#cartModal']");
+  const modalElement = document.getElementById("cartModal");
+
+  if (cartIcon && modalElement) {
+    const modal = new bootstrap.Modal(modalElement);
+    cartIcon.addEventListener("click", function (e) {
+      e.preventDefault();
+      modal.show();
+    });
+  }
 });
 
-// Update Cart Quantity via API Call and Re-render
+// Update Cart Quantity via API Call
 async function updateCartQuantity(itemKey, quantity) {
   try {
     const res = await fetch("/cart/update/", {
@@ -166,7 +207,6 @@ async function updateCartQuantity(itemKey, quantity) {
       updateCartBadge(data.cart);
       renderCart(data.cart);
 
-      // Update item subtotal dynamically
       const updatedItem = data.cart[itemKey];
       if (updatedItem) {
         const itemTotal = document.querySelector(`.item-total[data-key="${itemKey}"]`);
@@ -175,7 +215,6 @@ async function updateCartQuantity(itemKey, quantity) {
         }
       }
 
-      // Recalculate the total
       calculateCartTotal(data.cart);
     } else {
       alert("Failed to update quantity.");
@@ -185,21 +224,7 @@ async function updateCartQuantity(itemKey, quantity) {
   }
 }
 
-// Handle manual modal open when cart icon is clicked
-document.addEventListener("DOMContentLoaded", function () {
-  const cartIcon = document.querySelector("[data-bs-target='#cartModal']");
-  const modalElement = document.getElementById("cartModal");
-
-  if (cartIcon && modalElement) {
-    const modal = new bootstrap.Modal(modalElement);
-    cartIcon.addEventListener("click", function (e) {
-      e.preventDefault();
-      modal.show();
-    });
-  }
-});
-
-// Update cart badge function
+// Update cart badge
 function updateCartBadge(cart) {
   const badge = document.getElementById("cartBadge");
   let itemCount = 0;
@@ -209,16 +234,32 @@ function updateCartBadge(cart) {
   badge.textContent = itemCount > 0 ? itemCount : "0";
 }
 
-// Recalculate Cart Total and Update DOM
+// Calculate Cart Total
 function calculateCartTotal(cart) {
-  const total = Object.values(cart).reduce((sum, item) => {
+  let total = Object.values(cart).reduce((sum, item) => {
     return sum + item.price * item.quantity;
   }, 0);
 
-  document.getElementById("cartTotal").textContent = total.toFixed(2);
+  const banner = document.getElementById("cartDiscountBanner");
+  const name = document.getElementById("cartDiscountName");
+  const value = document.getElementById("cartDiscountValue");
+
+  if (window.appliedDiscount) {
+    const discountAmount = (total * window.appliedDiscount.percentage) / 100;
+    const discountedTotal = total - discountAmount;
+
+    banner.classList.remove("d-none");
+    name.textContent = window.appliedDiscount.name;
+    value.textContent = `-${discountAmount.toFixed(2)} (${window.appliedDiscount.percentage}%)`;
+
+    document.getElementById("cartTotal").textContent = discountedTotal.toFixed(2);
+  } else {
+    if (banner) banner.classList.add("d-none");
+    document.getElementById("cartTotal").textContent = total.toFixed(2);
+  }
 }
 
-// CSRF cookie helper
+// CSRF Cookie Helper
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
