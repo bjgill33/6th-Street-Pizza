@@ -43,6 +43,11 @@ urlpatterns = [
     path("tracking/", track_order, name="track_order"),
     path("store-locations/", locations_page, name="store_locations"),
     path("coupons/", coupons_page, name="coupons"),
+    path("clear-coupon/", views.clear_coupon, name="clear_coupon"),
+    path("apply-coupon/", views.apply_coupon, name="apply_coupon"),
+    path("validate-coupon/", views.validate_coupon, name="validate_coupon"),
+
+
 
 
 
