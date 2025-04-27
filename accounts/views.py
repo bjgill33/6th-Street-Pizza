@@ -27,6 +27,7 @@ from accounts.models import OrderPizza, OrderWings, OrderDrinks, OrderDesserts
 
 from .models import RestaurantLocation
 from .models import Order
+from .models import DiscountCode
 
 # --------------------------------------------
 #  Logging & Data Handling
@@ -64,18 +65,106 @@ from django.utils.html import strip_tags
 # Stripe Python SDK to handle payments securely
 import stripe
 
+# Django Framework Utilities
+from django.shortcuts import render, get_object_or_404, redirect
+
 # Set Stripe's secret key from your Django settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
+def apply_coupon(request):
+    code = request.GET.get("code")
+    if not code:
+        return JsonResponse({"valid": False, "error": "No code provided"})
+
+    try:
+        coupon = DiscountCode.objects.get(code__iexact=code, is_active=True)
+        request.session["applied_discount"] = {
+            "name": coupon.name,
+            "percentage": coupon.percentage,
+            "code": coupon.code,
+        }
+        return JsonResponse({
+            "valid": True,
+            "name": coupon.name,
+            "percentage": coupon.percentage,
+        })
+    except DiscountCode.DoesNotExist:
+        return JsonResponse({"valid": False, "error": "Invalid or expired coupon"})
+
+
 # Render the Locations page
 def locations_page(request):
-    return render(request, "store_locations.html")
+    location_key = request.session.get("selected_location")
+    store_info = None
+
+    if location_key:
+        store_number = location_key.replace("store", "")
+        store_info = RestaurantLocation.objects.filter(store_number=store_number).first()
+
+    stores = RestaurantLocation.objects.filter(status="Open")
+
+    # Attach placeholder images instead of embed codes
+    for store in stores:
+        if store.store_number == "1":
+            store.embed_code = '<img src="https://placehold.co/600x200?text=Store+1+Map" class="w-100" height="200" alt="Store 1 Map Placeholder">'
+        elif store.store_number == "2":
+            store.embed_code = '<img src="https://placehold.co/600x200?text=Store+2+Map" class="w-100" height="200" alt="Store 2 Map Placeholder">'
+        elif store.store_number == "3":
+            store.embed_code = '<img src="https://placehold.co/600x200?text=Store+3+Map" class="w-100" height="200" alt="Store 3 Map Placeholder">'
+
+    return render(request, "store_locations.html", {
+        "store_info": store_info,
+        "stores": stores,
+        "applied_discount": request.session.get("applied_discount"),
+    })
 
 
 # Render the Coupons page
 def coupons_page(request):
-    return render(request, "coupons.html")
+    # Only show active discount codes
+    discounts = DiscountCode.objects.filter(is_active=True)
+
+    # Optional: pull applied discount from session
+    applied_discount = request.session.get("applied_discount")
+
+    return render(request, "coupons.html", {
+        "discounts": discounts,
+        "applied_discount": applied_discount,
+    })
+
+
+# update the coupon validation view to store the coupon in session:
+def validate_coupon(request):
+    code = request.GET.get('code', '').strip()
+    cart = request.session.get('cart', {})
+
+    try:
+        discount = DiscountCode.objects.get(code__iexact=code, is_active=True)
+
+        # Only one discount per cart/session
+        request.session['applied_discount'] = {
+            "name": discount.name,
+            "code": discount.code,
+            "percentage": float(discount.percentage),  # Convert Decimal to float
+        }
+
+        return JsonResponse({
+            "valid": True,
+            "name": discount.name,
+            "code": discount.code,
+            "percentage": float(discount.percentage),  # Convert Decimal to float
+        })
+
+    except DiscountCode.DoesNotExist:
+        return JsonResponse({"valid": False, "error": "Invalid or expired discount code."})
+
+
+# clear coupon
+def clear_coupon(request):
+    if 'applied_discount' in request.session:
+        del request.session['applied_discount']
+    return JsonResponse({'cleared': True})
 
 
 # -------------------------------------------------------------
@@ -205,10 +294,6 @@ def menu(request):
     return render(request, "menu.html", context)
 
 
-# Render the payment page
-from .models import RestaurantLocation
-
-
 def get_all_toppings():
     toppings_qs = Topping.objects.all()
     return [
@@ -220,6 +305,7 @@ def get_all_toppings():
     ]
 
 
+# Payment solution
 def payment(request):
     location_key = request.session.get("selected_location")
     store_info = None
@@ -233,13 +319,21 @@ def payment(request):
             store_info = None
 
     if not store_info:
-        messages.error(request, "No location selected. Please go back and choose a store.")
-        return redirect("home")
+        # If no valid store, try assigning a default store (Store 1)
+        default_store = RestaurantLocation.objects.filter(store_number="1").first()
+        if default_store:
+            request.session["selected_location"] = "store1"
+            request.session.modified = True
+            store_info = default_store
+        else:
+            messages.error(request, "No location selected. Please go back and choose a store.")
+            return redirect("home")
 
     context = {
         "store_info": store_info,
         "toppings_json": json.dumps(get_all_toppings(), default=str),
-        "stripe_public_key": settings.STRIPE_PUBLIC_KEY
+        "stripe_public_key": settings.STRIPE_PUBLIC_KEY,
+        "applied_discount": request.session.get("applied_discount"),  # Keep discount working too
     }
 
     return render(request, "payment.html", context)
@@ -262,7 +356,8 @@ def track_order(request):
     context = {
         "tracking_attempted": True,  # Used to hide/show results in the template
         "order_found": False,  # Flag to control display of order info
-        "tracking_id": tracking_id  # Echo back the entered ID
+        "tracking_id": tracking_id,  # Echo back the entered ID
+        "applied_discount": request.session.get("applied_discount"),
     }
 
     # -------------------------------
@@ -350,8 +445,7 @@ def create_payment_intent(request):
             return JsonResponse({"error": str(e)}, status=500)
 
 
-# Within this is some code for trying to set up SendGrid
-
+# Passes data to the payment success page
 @csrf_exempt
 def payment_success(request):
     # Retrieve delivery and cart data from session
@@ -395,16 +489,27 @@ def payment_success(request):
 
     # Build order lines and initial estimated total
     order_lines = []
-    estimated_total = 0
+    estimated_subtotal = 0
     for item in cart.values():
         line = f"{item['quantity']}x {item['name']} ({item.get('size', '')})"
         if item.get('toppings'):
             line += f" - Toppings: {', '.join(item['toppings'])}"
         item_total = float(item['price']) * item['quantity']
-        estimated_total += item_total
+        estimated_subtotal += item_total
         line += f" - ${item_total:.2f}"
         order_lines.append(line)
-    order_summary = "\n".join(order_lines)
+
+    # Check for applied discount
+    applied_discount = request.session.get('applied_discount')
+    discount_amount = 0.0
+    estimated_total = estimated_subtotal  # Default
+
+    if applied_discount:
+        discount_percentage = float(applied_discount.get('percentage', 0))
+        discount_amount = round((estimated_subtotal * discount_percentage) / 100, 2)
+        estimated_total = round(estimated_subtotal - discount_amount, 2)
+    else:
+        estimated_total = estimated_subtotal
 
     # Get restaurant location
     location_key = request.session.get("selected_location")
@@ -472,14 +577,9 @@ def payment_success(request):
     # Final total update
     order.total_price = order.calculate_total_price()
     order.save(update_fields=["total_price"])
-    total_formatted = f"${order.total_price:.2f}"
 
-    # Construct HTML email
-    from django.core.mail import EmailMessage
-    from django.utils.html import strip_tags
-
-    html_message = f"""
-    <div style='font-family:Arial,sans-serif;'>
+    # Build Email
+    html_message = f"""<div style='font-family:Arial,sans-serif;'>
         <h2 style='color:#BB2D3B;'>Thank you for your order!</h2>
         <p><strong>Tracking ID:</strong> {order.tracking_id}</p>
 
@@ -492,12 +592,10 @@ def payment_success(request):
             <tr><td><strong>Zip Code:</strong></td><td>{store_info.zip_code}</td></tr>
             <tr><td><strong>Phone:</strong></td><td>{store_info.phone}</td></tr>
             <tr><td><strong>Manager:</strong></td><td>{store_info.manager_name}</td></tr>
-        </table><br>
-    """
+        </table><br>"""
 
     if delivery_method.lower() == "delivery":
-        html_message += f"""
-        <h3 style='color:#BB2D3B;'>Delivery Details:</h3>
+        html_message += f"""<h3 style='color:#BB2D3B;'>Delivery Details:</h3>
         <table style='width:100%;background:#F8F9FA;'>
             <tr><td><strong>Name:</strong></td><td>{full_name}</td></tr>
             <tr><td><strong>Phone:</strong></td><td>{phone}</td></tr>
@@ -506,21 +604,18 @@ def payment_success(request):
             <tr><td><strong>State:</strong></td><td>{state}</td></tr>
             <tr><td><strong>Zip:</strong></td><td>{zip_code}</td></tr>
             <tr><td><strong>Instructions:</strong></td><td>{special_instructions or 'N/A'}</td></tr>
-        </table><br>
-        """
+        </table><br>"""
 
-    html_message += f"""
-    <h3 style='color:#BB2D3B;'>Order Summary:</h3>
+    html_message += f"""<h3 style='color:#BB2D3B;'>Order Summary:</h3>
     <p><strong>Order Type:</strong> {delivery_method}</p>
     <table style='width:100%;border:1px solid #BB2D3B;background:#F8F9FA;'>
         <thead><tr style='background:#BB2D3B;color:#fff;'><th>Item Description</th></tr></thead>
         <tbody>{''.join([f"<tr><td>{line}</td></tr>" for line in order_lines])}</tbody>
     </table>
-    <p><strong>Total Paid:</strong> {total_formatted}</p>
+    <p><strong>Total Paid:</strong> ${order.total_price:.2f}</p>
     <p>If you have any questions, call us at <strong>{store_info.phone}</strong>.</p>
     <p style='color:#999;'>&copy; 2025 6th Street Pizza</p>
-    </div>
-    """
+    </div>"""
 
     try:
         email = EmailMessage(
@@ -547,10 +642,15 @@ def payment_success(request):
         except Exception as e:
             print("Email to restaurant failed:", e)
 
+    # Clear session
     request.session['cart'] = {}
+    request.session.pop('applied_discount', None)
 
     return render(request, "payment_success.html", {
-        "total": total_formatted,
+        "subtotal": estimated_subtotal,
+        "discount_amount": discount_amount if applied_discount else None,
+        "applied_discount": applied_discount,
+        "total": estimated_total,
         "items": order_lines,
         "store_info": store_info,
         "order_type": delivery_method,
@@ -572,7 +672,7 @@ def payment_success(request):
 # Store payment info
 @csrf_exempt
 def store_payment_details(request):
-    print("🛑 Stripe called /store-payment-details/")
+    print(" Stripe called /store-payment-details/")
     if request.method == "POST":
         try:
             data = json.loads(request.body)

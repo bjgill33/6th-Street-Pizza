@@ -38,6 +38,30 @@ from .choices import US_STATES
 from .utils import generate_tracking_id
 
 
+# ========================================
+# DiscountCode Model for Special Discounts
+# ========================================
+class DiscountCode(models.Model):
+    # Name of the discount (e.g., "Police Discount")
+    name = models.CharField(max_length=100)
+
+    # Detailed description of the offer
+    description = models.TextField()
+
+    # Unique code customers will enter (e.g., "YFHSCKV-COP")
+    code = models.CharField(max_length=50, unique=True)
+
+    # Discount amount in percentage (e.g., 10.00 for 10%)
+    percentage = models.DecimalField(max_digits=5, decimal_places=2)
+
+    # Indicates if the discount is currently active
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        # String representation in admin and shell
+        return f"{self.name} ({self.percentage}%)"
+
+
 # ============================================
 #  FUNCTION TO GENERATE TRACKING ID
 # ============================================
@@ -320,20 +344,20 @@ class Order(models.Model):
         """ Ensure Order is saved properly before querying related objects. """
         with transaction.atomic():  # Ensures all queries execute as a unit (monitor this -- when creating a cart with multiple similar items)
 
-            # ✅ Step 1: Ensure order is saved first to generate self.pk
+            #  Step 1: Ensure order is saved first to generate self.pk
             if not self.pk:
                 super().save(*args, **kwargs)  # Save order first to ensure primary key exists
 
-            # ✅ Step 2: Assign guest or customer ID properly
+            #  Step 2: Assign guest or customer ID properly
             if not self.customer and not self.guest:
                 guest = GuestUser.objects.create()
                 self.guest = guest
 
-            # ✅ Step 3: Assign tracking ID if not set
+            #  Step 3: Assign tracking ID if not set
             if not self.tracking_id:
                 self.tracking_id = generate_tracking_id()
 
-            # ✅ Step 4: Populate restaurant details if a location is selected
+            #  Step 4: Populate restaurant details if a location is selected
             if self.restaurant_location:
                 self.restaurant_address = self.restaurant_location.address
                 self.restaurant_city = self.restaurant_location.city
@@ -341,17 +365,17 @@ class Order(models.Model):
                 self.restaurant_zip_code = self.restaurant_location.zip_code
                 self.restaurant_phone = self.restaurant_location.phone
 
-            # ✅ Step 5: Ensure payment details are captured
+            #  Step 5: Ensure payment details are captured
             if self.card_last_four:
                 self.card_last_four = self.card_last_four[-4:]  # Ensure only last 4 digits are stored
 
-            # ✅ Step 6: Ensure order summary is updated
+            #  Step 6: Ensure order summary is updated
             self.order_summary = self.generate_order_summary()
 
-            # ✅ Step 7: Calculate total price before saving
+            #  Step 7: Calculate total price before saving
             self.total_price = self.calculate_total_price()
 
-            # ✅ Step 8: Save the order again, only updating specific fields
+            #  Step 8: Save the order again, only updating specific fields
             super().save(update_fields=[
                 "guest", "customer", "tracking_id", "order_summary",
                 "total_price", "restaurant_address", "restaurant_city",
@@ -383,7 +407,7 @@ class Order(models.Model):
                 }
             },
             "special_instructions": self.special_instructions if self.special_instructions else "None",
-            # ✅ Include special instructions
+            #  Include special instructions
             "tracking_id": self.tracking_id,  # ✅ Add tracking ID
             "order": {
                 "pizzas": [

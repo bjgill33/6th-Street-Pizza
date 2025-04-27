@@ -1,11 +1,26 @@
 from django.contrib import admin
 from .models import CustomUser, Topping, Pizza, Wing, Drink, Dessert, Order, OrderPizza, OrderWings, OrderDrinks, \
-    OrderDesserts, GuestUser, RestaurantLocation, generate_tracking_id, OrderPizzaTopping
+    OrderDesserts, GuestUser, RestaurantLocation, generate_tracking_id, OrderPizzaTopping, DiscountCode
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django import forms
 from django.forms import ModelChoiceField
+
+
+# ======================================================
+# Admin Panel Configuration for DiscountCode Management
+# ======================================================
+@admin.register(DiscountCode)
+class DiscountCodeAdmin(admin.ModelAdmin):
+    # Fields to display in the admin list view
+    list_display = ("name", "percentage", "code", "is_active")
+
+    # Enable search by these fields
+    search_fields = ("name", "code")
+
+    # Fields that can be edited directly from the list view
+    list_editable = ("percentage", "is_active")
 
 
 # ============================================
@@ -32,7 +47,7 @@ class PizzaAdmin(admin.ModelAdmin):
     list_display_links = ('name',)  # ✅ Make name clickable
     list_editable = ('description', 'price_small', 'price_medium', 'price_large', 'price_extra_large')
     search_fields = ('name', 'description')
-    #filter_horizontal = ('toppings',)
+    # filter_horizontal = ('toppings',)
     list_per_page = 20
     actions = ['delete_selected']
 
