@@ -33,7 +33,6 @@ ALLOWED_HOSTS = [
     "5.181.218.74",
     "localhost",
     "files.6thstreetpizza.store",
-    "127.0.0.1",
 ]
 
 
@@ -73,10 +72,14 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+
+                # Global discount context for all templates
+                "accounts.context_processors.applied_discount_context",
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = "myproject.wsgi.application"
 
