@@ -9,5 +9,5 @@
 ## Team Lead/Scrum Master: Brian Gill
 
 ## TRELLO Sprint Retrospective Board
-![Trello Board Screenshot](https://github.com/bjgill33/6th-Street-Pizza/blob/Production/team-docs/status-updates/Group_6-Sprint_4-Retrospective_Board.png)
+![Trello Board Screenshot](https://github.com/bjgill33/6th-Street-Pizza/blob/main/team-docs/status-updates/Group_6-Sprint_5-Retrospective_Board.png)
 [Link to Trello Retrospective Board](https://trello.com/b/ZcuWEopb/group-6-sprint-5-sprint-retrospective-board)
