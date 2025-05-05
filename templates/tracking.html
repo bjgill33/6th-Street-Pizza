@@ -43,7 +43,11 @@
     </nav>
 
 
-
+<!-- Quick Style -->
+<style>
+  .is-invalid { border-color: #dc3545 !important; }
+  .is-valid { border-color: #28a745 !important; }
+</style>
 
 
 
@@ -147,6 +151,7 @@
     </script>
 
     <!-- Global Variables (rendered server-side) -->
+    <script src="{% static 'js/trackerValidator.js' %}"></script>
     <script src="{% static 'js/stripePaymentHandler.js' %}"></script>
     <script src="{% static 'js/orderTypeHandler.js' %}"></script>
     <script src="{% static 'js/cartHandler.js' %}"></script>
