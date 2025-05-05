@@ -109,18 +109,21 @@
   </div>
 
   <!-- Payment Summary -->
-  <div class="text-end mt-4">
-    <p><strong>Subtotal:</strong> ${{ subtotal|floatformat:2 }}</p>
+<div class="text-end mt-4">
+  <p><strong>Subtotal:</strong> ${{ subtotal|floatformat:2 }}</p>
 
-    {% if discount_amount %}
-      <p><strong>Discount:</strong> -${{ discount_amount|floatformat:2 }}</p>
-      {% if applied_discount %}
-        <p><strong>Discount Name:</strong> {{ applied_discount.name }}</p>
-      {% endif %}
+  {% if discount_amount %}
+    <p><strong>Discount:</strong> -${{ discount_amount|floatformat:2 }}</p>
+    {% if applied_discount %}
+      <p><strong>Discount Name:</strong> {{ applied_discount.name }}</p>
     {% endif %}
+  {% endif %}
 
-    <p class="fs-4 mt-2"><strong>Total Paid:</strong> ${{ total|floatformat:2 }}</p>
-  </div>
+  <p><strong>Sales Tax (7.25%):</strong> ${{ sales_tax|floatformat:2 }}</p>
+
+  <p class="fs-4 mt-2"><strong>Total Paid:</strong> ${{ total|floatformat:2 }}</p>
+</div>
+
 
   <div class="text-center mt-4">
     <a href="{% url 'menu' %}" class="btn btn-primary">Back to Menu</a>
@@ -135,9 +138,11 @@
 </footer>
 
 <script>
-  window.csrfTokenHTML = `{% csrf_token %}`;
-  window.toppingsList = {{ toppings_json|safe }};
+  window.cartData = {{ cart_json|safe }};
+  window.appliedDiscount = {{ applied_discount_json|safe }};
+  window.stripePublicKey = "{{ stripe_public_key }}";
 </script>
+
 
 <script src="{% static 'js/cartHandler.js' %}"></script>
 <script src="{% static 'js/discountHandler.js' %}"></script>
@@ -145,6 +150,8 @@
 <script src="{% static 'js/locationsModal.js' %}"></script>
 <script src="{% static 'js/orderModalHandler.js' %}"></script>
 <script src="{% static 'js/locations.js' %}"></script>
+<script src="/static/js/prevent-back-to-form.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
