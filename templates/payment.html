@@ -107,7 +107,6 @@
 <div id="discountNotice" style="display:none;" class="alert alert-success p-2 mt-2">
   <strong>Coupon Applied:</strong> <span id="appliedCouponName"></span><br>
   Discount: <span id="appliedDiscountAmount"></span><br>
-  <button class="btn btn-sm btn-outline-danger mt-2" id="clearDiscountBtn">Clear Coupon</button>
 </div>
 
 
@@ -507,13 +506,40 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("/session-delivery-data/", {
+    method: "GET",
+    credentials: "include"
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "ok") {
+        const fields = [
+          "email", "fullName", "phone", "address",
+          "city", "state", "zip", "specialInstructions"
+        ];
+        fields.forEach(field => {
+          const element = document.getElementById(field);
+          if (element && data[field]) {
+            element.value = data[field];
+          }
+        });
+      }
+    })
+    .catch(err => console.error("Failed to load session delivery data:", err));
+});
+</script>
+
+
+
     <!--  Global Variables (rendered server-side) -->
     <script src="{% static 'js/stripePaymentHandler.js' %}"></script>
     <script src="{% static 'js/orderTypeHandler.js' %}"></script>
     <script src="{% static 'js/cartHandler.js' %}"></script>
     <script src="{% static 'js/orderModalGlobals.js' %}"></script>
     <script src="{% static 'js/locationsModal.js' %}"></script>
-    <script src="{% static 'js/orderModal.js' %}"></script>
     <script src="{% static 'js/orderModalHandler.js' %}"></script>
     <script src="{% static 'js/discountHandler.js' %}"></script>
     <script src="{% static 'js/locations.js' %}"></script>
