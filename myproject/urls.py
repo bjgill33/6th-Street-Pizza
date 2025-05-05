@@ -46,6 +46,8 @@ urlpatterns = [
     path("clear-coupon/", views.clear_coupon, name="clear_coupon"),
     path("apply-coupon/", views.apply_coupon, name="apply_coupon"),
     path("validate-coupon/", views.validate_coupon, name="validate_coupon"),
+    path('save-delivery-info/', views.save_delivery_info, name='save_delivery_info'),
+
 
 
 
