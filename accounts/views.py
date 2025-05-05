@@ -42,6 +42,10 @@ from django.core.serializers.json import DjangoJSONEncoder
 # Handles general-purpose JSON parsing/handling
 import json
 
+
+# For regular expression
+import re
+
 # Handles currency math precisely without floating point issues
 from decimal import Decimal
 
@@ -57,6 +61,7 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from django.core.mail import send_mail, EmailMessage
 from django.utils.html import strip_tags
+from django.core.mail import EmailMultiAlternatives
 
 # --------------------------------------------
 #  Stripe Payment Integration
@@ -68,8 +73,45 @@ import stripe
 # Django Framework Utilities
 from django.shortcuts import render, get_object_or_404, redirect
 
+# Decorator to restrict a Django view to accept only HTTP POST requests for security and proper usage
+from django.views.decorators.http import require_POST
+
 # Set Stripe's secret key from your Django settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+# Allows this view to bypass Django's default CSRF protection (because it's being called via AJAX)
+@csrf_exempt
+# Ensures that only HTTP POST requests are allowed for this view
+@require_POST
+def save_delivery_info(request):
+    """
+    View to capture delivery information submitted from the homepage modal
+    and store it into the Django session for later use (e.g., pre-populating the payment page).
+    """
+    try:
+        # Parse JSON data sent from the frontend
+        data = json.loads(request.body)
+
+        # Save delivery details into the Django session
+        request.session["full_name"] = data.get("fullName")
+        request.session["email"] = data.get("email")
+        request.session["phone"] = data.get("phone")
+        request.session["address"] = data.get("address")
+        request.session["city"] = data.get("city")
+        request.session["state"] = data.get("state")
+        request.session["zip"] = data.get("zip")
+        request.session["special_instructions"] = data.get("specialInstructions")
+
+        # Mark the session as modified to ensure Django saves the changes
+        request.session.modified = True
+
+        # Return success response
+        return JsonResponse({"status": "success"})
+
+    except Exception as e:
+        # Return an error response if anything goes wrong
+        return JsonResponse({"error": str(e)}, status=400)
 
 
 def apply_coupon(request):
@@ -408,13 +450,13 @@ def create_payment_intent(request):
         try:
             data = json.loads(request.body)
 
-            # Always store email and order type
+            # Store email and order type
             email = data.get("email")
-            order_type = data.get("orderType", "delivery")  # fallback to 'delivery'
+            order_type = data.get("orderType", "delivery").lower()
             request.session["customer_email"] = email
             request.session["order_type"] = order_type
 
-            # Conditionally store delivery information
+            # Save delivery info if applicable
             if order_type == "delivery":
                 request.session["full_name"] = data.get("fullName")
                 request.session["phone"] = data.get("phone")
@@ -424,101 +466,116 @@ def create_payment_intent(request):
                 request.session["zip"] = data.get("zip")
                 request.session["special_instructions"] = data.get("specialInstructions")
 
-            # Get cart and calculate total
+            # Retrieve cart from session
             cart = request.session.get("cart", {})
             if not cart:
                 return JsonResponse({"error": "Cart is empty"}, status=400)
 
-            total = sum(float(item["price"]) * item["quantity"] for item in cart.values())
-            amount_in_cents = int(total * 100)
+            # Calculate subtotal
+            subtotal = sum(float(item["price"]) * item["quantity"] for item in cart.values())
+
+            # Apply discount only for carryout or pickup
+            applied_discount = request.session.get("applied_discount") if order_type in ["pickup", "carryout"] else None
+            discount_amount = 0.0
+            if applied_discount:
+                discount_percentage = float(applied_discount.get("percentage", 0))
+                discount_amount = round(subtotal * discount_percentage / 100, 2)
+
+            # Compute tax and final total
+            tax_rate = 0.0725  # 7.25%
+            subtotal_after_discount = round(subtotal - discount_amount, 2)
+            sales_tax = round(subtotal_after_discount * tax_rate, 2)
+            final_total = round(subtotal_after_discount + sales_tax, 2)
+
+            # Save calculations to session
+            request.session["calculated_subtotal"] = round(subtotal, 2)
+            request.session["calculated_discount"] = discount_amount
+            request.session["calculated_tax"] = sales_tax
+            request.session["calculated_total"] = final_total
 
             # Create Stripe payment intent
             intent = stripe.PaymentIntent.create(
-                amount=amount_in_cents,
+                amount=int(final_total * 100),  # cents
                 currency="usd",
                 receipt_email=email,
                 metadata={"integration_check": "accept_a_payment"},
             )
 
-            return JsonResponse({"clientSecret": intent.client_secret})
+            return JsonResponse({
+                "clientSecret": intent.client_secret,
+                "finalTotal": int(final_total * 100)
+            })
+
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
 
-# Passes data to the payment success page
+# Payment Display
 @csrf_exempt
 def payment_success(request):
-    # Retrieve delivery and cart data from session
+    # Step 1: Retrieve cart and determine delivery method
     cart = request.session.get('cart', {})
     order_type_raw = request.session.get("order_type", "delivery").lower()
-
-    # Normalize delivery_method with fallback mapping
-    order_type_map = {
-        "pickup": "Pickup",
-        "carryout": "Pickup",
-        "delivery": "Delivery"
-    }
+    order_type_map = {"pickup": "Pickup", "carryout": "Pickup", "delivery": "Delivery"}
     delivery_method = order_type_map.get(order_type_raw, "Pickup")
+    state_abbr = "NC"
 
-    # Get delivery info if available
-    full_name = request.session.get("full_name")
-    phone = request.session.get("phone")
-    address = request.session.get("address")
-    city = request.session.get("city")
-    state = request.session.get("state")
-    zip_code = request.session.get("zip")
-    special_instructions = request.session.get("special_instructions")
+    # Step 2: Retrieve and sanitize user fields
+    def sanitize(value, max_length):
+        if isinstance(value, str):
+            value = re.sub(r"[<>;'\\]", "", value.strip())
+            return value[:max_length]
+        return value
 
-    # Convert full state name to 2-letter abbreviation if needed
-    state_abbreviations = {
-        "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA",
-        "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE", "Florida": "FL", "Georgia": "GA",
-        "Hawaii": "HI", "Idaho": "ID", "Illinois": "IL", "Indiana": "IN", "Iowa": "IA",
-        "Kansas": "KS", "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
-        "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS",
-        "Missouri": "MO", "Montana": "MT", "Nebraska": "NE", "Nevada": "NV", "New Hampshire": "NH",
-        "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY", "North Carolina": "NC",
-        "North Dakota": "ND", "Ohio": "OH", "Oklahoma": "OK", "Oregon": "OR", "Pennsylvania": "PA",
-        "Rhode Island": "RI", "South Carolina": "SC", "South Dakota": "SD", "Tennessee": "TN",
-        "Texas": "TX", "Utah": "UT", "Vermont": "VT", "Virginia": "VA", "Washington": "WA",
-        "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY"
-    }
-    state_abbr = state_abbreviations.get(state, state[:2].upper())
+    full_name = sanitize(request.session.get("full_name", "Guest"), 50)
+    phone = sanitize(request.session.get("phone", "N/A"), 15)
+    customer_email = sanitize(request.session.get("customer_email", "customer@example.com"), 80)
+    special_instructions = sanitize(request.session.get("special_instructions", ""), 100)
 
-    customer_email = request.session.get("customer_email", "customer@example.com")
-
-    # Build order lines and initial estimated total
-    order_lines = []
-    estimated_subtotal = 0
-    for item in cart.values():
-        line = f"{item['quantity']}x {item['name']} ({item.get('size', '')})"
-        if item.get('toppings'):
-            line += f" - Toppings: {', '.join(item['toppings'])}"
-        item_total = float(item['price']) * item['quantity']
-        estimated_subtotal += item_total
-        line += f" - ${item_total:.2f}"
-        order_lines.append(line)
-
-    # Check for applied discount
-    applied_discount = request.session.get('applied_discount')
-    discount_amount = 0.0
-    estimated_total = estimated_subtotal  # Default
-
-    if applied_discount:
-        discount_percentage = float(applied_discount.get('percentage', 0))
-        discount_amount = round((estimated_subtotal * discount_percentage) / 100, 2)
-        estimated_total = round(estimated_subtotal - discount_amount, 2)
-    else:
-        estimated_total = estimated_subtotal
-
-    # Get restaurant location
+    # Step 3: Get selected store info
     location_key = request.session.get("selected_location")
     store_info = None
     if location_key:
         store_number = location_key.replace("store", "")
         store_info = RestaurantLocation.objects.filter(store_number=store_number).first()
 
-    # Create order
+    # Step 4: Retrieve delivery or store address
+    if delivery_method.lower() == "delivery":
+        address = sanitize(request.session.get("address", ""), 100)
+        city = sanitize(request.session.get("city", ""), 50)
+        zip_code = sanitize(request.session.get("zip", ""), 5)
+    else:
+        address = store_info.address if store_info else "N/A"
+        city = store_info.city if store_info else "N/A"
+        zip_code = store_info.zip_code if store_info else "00000"
+
+    # Step 5: Build order summary lines
+    order_lines = []
+    for item in cart.values():
+        line = f"{item['quantity']}x {item['name']} ({item.get('size', '')})"
+        if item.get('toppings'):
+            line += f" - Toppings: {', '.join(item['toppings'])}"
+        item_total = float(item['price']) * item['quantity']
+        line += f" - ${item_total:.2f}"
+        order_lines.append(line)
+
+    # Step 6: Load calculated values from session (no recalculation)
+    estimated_subtotal = float(request.session.get("calculated_subtotal", 0))
+    discount_amount = float(request.session.get("calculated_discount", 0))
+    sales_tax = float(request.session.get("calculated_tax", 0))
+    estimated_total = float(request.session.get("calculated_total", 0))
+    applied_discount = request.session.get('applied_discount') if order_type_raw in ["pickup", "carryout"] else None
+
+    # grab discount code to be placed in the order view
+    discount_percentage = None
+    if applied_discount and applied_discount.get("code"):
+        try:
+            discount_obj = DiscountCode.objects.get(code=applied_discount["code"])
+            discount_percentage = discount_obj.percentage
+        except DiscountCode.DoesNotExist:
+            discount_percentage = None
+
+    # Step 7: Create initial order record
     order = Order.objects.create(
         name=full_name,
         phone=phone,
@@ -530,29 +587,62 @@ def payment_success(request):
         delivery_method=delivery_method,
         special_instructions=special_instructions,
         total_price=estimated_total,
+        subtotal_before_discount=estimated_subtotal,
+        discount_amount=discount_amount,
+        sales_tax=sales_tax,
+        coupon=applied_discount.get("code") if applied_discount else None,
         card_last_four=request.session.get("card_last4"),
         card_expiry_date=request.session.get("card_expiry"),
         card_type=request.session.get("card_type") or "Unknown",
         restaurant_location=store_info,
         payment_confirmation="Paid"
     )
+    # Match the order with the
+    order_summary = {
+        "email": customer_email,
+        "name": full_name,
+        "phone": phone,
+        "address": {
+            "street": address,
+            "city": city,
+            "zipcode": zip_code,
+            "state": state_abbr
+        },
+        "store_location": {
+            "store_number": store_info.store_number if store_info else None,
+            "address": {
+                "street": store_info.address if store_info else "",
+                "city": store_info.city if store_info else "",
+                "state": store_info.state if store_info else ""
+            }
+        },
+        "special_instructions": special_instructions or "None",
+        "tracking_id": order.tracking_id,
+        "subtotal_before_discount": estimated_subtotal, "discount_amount": discount_amount,
+        "sales_tax": sales_tax,
+        "tax_rate": 0.0725,
+        "coupon": applied_discount.get("code") if applied_discount else None,
+        "discount_percentage": discount_percentage,
+        "total_price": estimated_subtotal - discount_amount + sales_tax,
 
-    # Save each cart item
+    }
+
+    if applied_discount:
+        order._applied_discount = applied_discount
+
+    # Step 8: Save order items by category
     for key, item in cart.items():
         category = item.get("category")
         quantity = item.get("quantity", 1)
 
         if category == "pizza":
-            pizza_id = int(key.split("_")[1])
-            size = item.get("size", "medium")
+            pizza = Pizza.objects.filter(id=int(key.split("_")[1])).first()
             toppings = item.get("toppings", [])
-            pizza = Pizza.objects.filter(id=pizza_id).first()
             topping_objs = Topping.objects.filter(name__in=toppings)
-
             OrderPizza.objects.create(
                 order=order,
                 pizza=pizza,
-                size=size,
+                size=item.get("size", "medium"),
                 quantity=quantity,
                 topping_1=topping_objs[0] if len(topping_objs) > 0 else None,
                 topping_2=topping_objs[1] if len(topping_objs) > 1 else None,
@@ -560,29 +650,72 @@ def payment_success(request):
             )
 
         elif category == "wing":
-            wing_id = int(key.split("_")[1])
-            wing = Wing.objects.filter(id=wing_id).first()
+            wing = Wing.objects.filter(id=int(key.split("_")[1])).first()
             OrderWings.objects.create(order=order, wing=wing, quantity=quantity)
 
         elif category == "drink":
-            drink_id = int(key.split("_")[1])
-            drink = Drink.objects.filter(id=drink_id).first()
+            drink = Drink.objects.filter(id=int(key.split("_")[1])).first()
             OrderDrinks.objects.create(order=order, drink=drink, quantity=quantity)
 
         elif category == "dessert":
-            dessert_id = int(key.split("_")[1])
-            dessert = Dessert.objects.filter(id=dessert_id).first()
+            dessert = Dessert.objects.filter(id=int(key.split("_")[1])).first()
             OrderDesserts.objects.create(order=order, dessert=dessert, quantity=quantity)
 
-    # Final total update
-    order.total_price = order.calculate_total_price()
-    order.save(update_fields=["total_price"])
+    order.order_summary = json.dumps(order_summary, default=str)
+    order.save()
 
-    # Build Email
-    html_message = f"""<div style='font-family:Arial,sans-serif;'>
+    # Step 9: Build HTML and plain text email
+    delivery_details_html = ""
+    delivery_details_text = ""
+    if delivery_method.lower() == "delivery":
+        delivery_details_html = f"""
+        <h3 style='color:#BB2D3B;'>Delivery Details:</h3>
+        <table style='width:100%;background:#F8F9FA;'>
+            <tr><td><strong>Name:</strong></td><td>{full_name}</td></tr>
+            <tr><td><strong>Phone:</strong></td><td>{phone}</td></tr>
+            <tr><td><strong>Street:</strong></td><td>{address}</td></tr>
+            <tr><td><strong>City:</strong></td><td>{city}</td></tr>
+            <tr><td><strong>State:</strong></td><td>{state_abbr}</td></tr>
+            <tr><td><strong>Zip:</strong></td><td>{zip_code}</td></tr>
+            <tr><td><strong>Instructions:</strong></td><td>{special_instructions or 'N/A'}</td></tr>
+        </table><br>
+        """
+        delivery_details_text = f"""
+    Delivery Details:
+    Name: {full_name}
+    Phone: {phone}
+    Street: {address}
+    City: {city}
+    State: {state_abbr}
+    Zip: {zip_code}
+    Instructions: {special_instructions or 'N/A'}
+    """
+
+    discount_note_html = ""
+    discount_note_text = ""
+    if applied_discount and delivery_method.lower() == "pickup":
+        discount_name = applied_discount.get("name", "Discount")
+        discount_note_html = f"""
+        <div style='margin-top: 20px; padding: 15px; background-color: #fff3cd; border-left: 5px solid #ffc107;'>
+            <h4 style='margin-top: 0;'>Discount Applied: {discount_name}</h4>
+            <p>You saved <strong>${discount_amount:.2f}</strong> using <strong>{discount_name}</strong>.</p>
+            <p><em>Please bring valid ID (student, military, medical) when picking up.</em></p>
+        </div>
+        """
+        discount_note_text = f"""
+    Discount Applied: {discount_name}
+    You saved ${discount_amount:.2f} using {discount_name}.
+    Please bring valid ID (student, military, medical) when picking up.
+    """
+
+    # Calc total with discounts and tax
+    order_total = estimated_subtotal - (discount_amount if applied_discount else 0) + sales_tax
+
+    # Build HTML body
+    html_message = f"""
+    <div style='font-family:Arial,sans-serif;'>
         <h2 style='color:#BB2D3B;'>Thank you for your order!</h2>
         <p><strong>Tracking ID:</strong> {order.tracking_id}</p>
-
         <h3 style='color:#BB2D3B;'>Order Fulfilled By:</h3>
         <table style='width:100%;background:#F8F9FA;'>
             <tr><td><strong>Store #:</strong></td><td>{store_info.store_number}</td></tr>
@@ -592,65 +725,105 @@ def payment_success(request):
             <tr><td><strong>Zip Code:</strong></td><td>{store_info.zip_code}</td></tr>
             <tr><td><strong>Phone:</strong></td><td>{store_info.phone}</td></tr>
             <tr><td><strong>Manager:</strong></td><td>{store_info.manager_name}</td></tr>
-        </table><br>"""
-
-    if delivery_method.lower() == "delivery":
-        html_message += f"""<h3 style='color:#BB2D3B;'>Delivery Details:</h3>
+        </table><br>
+        {delivery_details_html}
+        {discount_note_html}
+        <h3 style='color:#BB2D3B;'>Order Summary:</h3>
+        <p><strong>Order Type:</strong> {delivery_method}</p>
+        <table style='width:100%;border:1px solid #BB2D3B;background:#F8F9FA;'>
+            <thead><tr style='background:#BB2D3B;color:#fff;'><th>Item Description</th></tr></thead>
+            <tbody>{''.join([f"<tr><td>{line}</td></tr>" for line in order_lines])}</tbody>
+        </table>
+        <h3 style='color:#BB2D3B;'>Payment Summary:</h3>
         <table style='width:100%;background:#F8F9FA;'>
-            <tr><td><strong>Name:</strong></td><td>{full_name}</td></tr>
-            <tr><td><strong>Phone:</strong></td><td>{phone}</td></tr>
-            <tr><td><strong>Street:</strong></td><td>{address}</td></tr>
-            <tr><td><strong>City:</strong></td><td>{city}</td></tr>
-            <tr><td><strong>State:</strong></td><td>{state}</td></tr>
-            <tr><td><strong>Zip:</strong></td><td>{zip_code}</td></tr>
-            <tr><td><strong>Instructions:</strong></td><td>{special_instructions or 'N/A'}</td></tr>
-        </table><br>"""
+            <tr><td><strong>Subtotal:</strong></td><td>${estimated_subtotal:.2f}</td></tr>
+            {f"<tr><td><strong>Discount:</strong></td><td>-${discount_amount:.2f}</td></tr>" if applied_discount else ""}
+            <tr><td><strong>Sales Tax (7.25%):</strong></td><td>${sales_tax:.2f}</td></tr>
+            <tr><td><strong>Total Paid:</strong></td><td>${order_total:.2f}</td></tr>
 
-    html_message += f"""<h3 style='color:#BB2D3B;'>Order Summary:</h3>
-    <p><strong>Order Type:</strong> {delivery_method}</p>
-    <table style='width:100%;border:1px solid #BB2D3B;background:#F8F9FA;'>
-        <thead><tr style='background:#BB2D3B;color:#fff;'><th>Item Description</th></tr></thead>
-        <tbody>{''.join([f"<tr><td>{line}</td></tr>" for line in order_lines])}</tbody>
-    </table>
-    <p><strong>Total Paid:</strong> ${order.total_price:.2f}</p>
-    <p>If you have any questions, call us at <strong>{store_info.phone}</strong>.</p>
-    <p style='color:#999;'>&copy; 2025 6th Street Pizza</p>
-    </div>"""
+        </table>
+        <p>If you have any questions, call us at <strong>{store_info.phone}</strong>.</p>
+        <p style='color:#999;'>&copy; 2025 6th Street Pizza</p>
+    </div>
+    """
 
+    # Build plain text version
+    plain_message = f"""
+    Thank you for your order!
+    Tracking ID: {order.tracking_id}
+    
+    Order Fulfilled By:
+    Store #: {store_info.store_number}
+    Address: {store_info.address}
+    City: {store_info.city}
+    State: {store_info.state}
+    Zip Code: {store_info.zip_code}
+    Phone: {store_info.phone}
+    Manager: {store_info.manager_name}
+    
+    {delivery_details_text}{discount_note_text}
+    
+    Order Summary:
+    Order Type: {delivery_method}
+    Items:
+    {chr(10).join(f"- {line}" for line in order_lines)}
+    
+    Payment Summary:
+    Subtotal: ${estimated_subtotal:.2f}
+    {f"Discount: -${discount_amount:.2f}" if applied_discount else ""}
+    Sales Tax (7.25%): ${sales_tax:.2f}
+    Total Paid: ${order_total:.2f}
+
+    
+    If you have any questions, call us at {store_info.phone}.
+    © 2025 6th Street Pizza
+    """
+
+    # Step 10: Send email using both plain text and HTML
     try:
-        email = EmailMessage(
+        msg = EmailMultiAlternatives(
             subject="Your 6th Street Pizza Order Confirmation",
-            body=html_message,
+            body=plain_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[customer_email],
+            to=[customer_email]
         )
-        email.content_subtype = "html"
-        email.send()
+        msg.attach_alternative(html_message, "text/html")
+        msg.send(fail_silently=False)
     except Exception as e:
         print("Email to customer failed:", e)
 
-    if store_info and hasattr(store_info, "email") and store_info.email:
-        try:
-            store_email = EmailMessage(
-                subject=f"New Order - Store #{store_info.store_number}",
-                body=html_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[store_info.email],
-            )
-            store_email.content_subtype = "html"
-            store_email.send()
-        except Exception as e:
-            print("Email to restaurant failed:", e)
-
-    # Clear session
+    # Step 11: Clean session
     request.session['cart'] = {}
     request.session.pop('applied_discount', None)
+    for key in ["full_name", "email", "phone", "address", "city", "state", "zip", "special_instructions"]:
+        request.session.pop(key, None)
 
+    # Calculate updated total with tax and discount (no rounding)
+    if applied_discount:
+        adjusted_subtotal = estimated_subtotal - discount_amount
+    else:
+        adjusted_subtotal = estimated_subtotal
+
+    updated_total = adjusted_subtotal + sales_tax
+
+    # Update the order's total_price with recalculated value
+    order.total_price = updated_total
+    order.save(update_fields=["total_price"])
+    try:
+        summary = json.loads(order.order_summary)
+        summary["total_price"] = float(updated_total)
+        order.order_summary = json.dumps(summary, default=str)
+        order.save(update_fields=["order_summary"])
+    except Exception as e:
+        print("Failed to update order summary total:", e)
+
+    # Step 12: Render success
     return render(request, "payment_success.html", {
         "subtotal": estimated_subtotal,
         "discount_amount": discount_amount if applied_discount else None,
         "applied_discount": applied_discount,
-        "total": estimated_total,
+        "sales_tax": sales_tax,
+        "total": updated_total,
         "items": order_lines,
         "store_info": store_info,
         "order_type": delivery_method,

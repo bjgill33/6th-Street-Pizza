@@ -267,10 +267,17 @@ class Order(models.Model):
                               help_text="Guest email (if customer is not logged in)")
 
     total_price = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    subtotal_before_discount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    discount_amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    sales_tax = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    coupon = models.CharField(max_length=50, null=True, blank=True)
+
     order_summary = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
     STATUS_CHOICES = [("Pending", "Pending"), ("Completed", "Completed"), ("Cancelled", "Cancelled")]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pending")
+
     DELIVERY_METHOD_CHOICES = [("Pickup", "Pickup"), ("Delivery", "Delivery")]
     delivery_method = models.CharField(max_length=10, choices=DELIVERY_METHOD_CHOICES, default="Pickup")
 
@@ -369,11 +376,11 @@ class Order(models.Model):
             if self.card_last_four:
                 self.card_last_four = self.card_last_four[-4:]  # Ensure only last 4 digits are stored
 
-            #  Step 6: Ensure order summary is updated
-            self.order_summary = self.generate_order_summary()
-
-            #  Step 7: Calculate total price before saving
+            # Step 6: Calculate total price before saving
             self.total_price = self.calculate_total_price()
+
+            # Step 7: Ensure order summary is updated
+            self.order_summary = self.generate_order_summary()
 
             #  Step 8: Save the order again, only updating specific fields
             super().save(update_fields=[
@@ -384,8 +391,14 @@ class Order(models.Model):
             ])
 
     def generate_order_summary(self):
-        """ Generate structured JSON order summary including missing fields. """
+        """
+        Generate a structured JSON summary of the order,
+        including customer/store info, items, discount, tax, and totals.
+        """
 
+        # ---------------------------------------------
+        # Build base customer and store location data
+        # ---------------------------------------------
         order_data = {
             "customer_id": self.customer.id if self.customer else None,
             "guest_id": self.guest.id if self.guest else None,
@@ -393,7 +406,7 @@ class Order(models.Model):
             "name": self.customer.name if self.customer else (self.name if self.name else "Guest"),
             "phone": self.phone,
             "address": {
-                "street": self.address,  # ✅ Added full street address
+                "street": self.address,
                 "city": self.city,
                 "zipcode": self.zip_code,
                 "state": self.state,
@@ -407,39 +420,76 @@ class Order(models.Model):
                 }
             },
             "special_instructions": self.special_instructions if self.special_instructions else "None",
-            #  Include special instructions
-            "tracking_id": self.tracking_id,  # ✅ Add tracking ID
-            "order": {
-                "pizzas": [
-                    {
-                        "name": item.pizza.name,
-                        "size": item.size,
-                        "quantity": item.quantity,
-                        "toppings": list(filter(None, [
-                            item.topping_1.name if item.topping_1 else None,
-                            item.topping_2.name if item.topping_2 else None,
-                            item.topping_3.name if item.topping_3 else None
-                        ]))
-                    }
-                    for item in self.orderpizza_set.all()
-                ],
-                "wings": [
-                    {"flavor": item.wing.name, "quantity": item.quantity}
-                    for item in self.orderwings_set.all()
-                ],
-                "drinks": [
-                    {"name": item.drink.name, "quantity": item.quantity}
-                    for item in self.orderdrinks_set.all()
-                ],
-                "desserts": [
-                    {"name": item.dessert.name, "quantity": item.quantity}
-                    for item in self.orderdesserts_set.all()
-                ],
-            },
-            "total_price": float(self.total_price)  # ✅ Ensures Decimal is properly serialized
+            "tracking_id": self.tracking_id,
         }
 
-        return json.dumps(order_data)  # ✅ Returns JSON string
+        # ---------------------------------------------
+        # Build order items (pizzas, wings, drinks, desserts)
+        # ---------------------------------------------
+        order_data["order"] = {
+            "pizzas": [
+                {
+                    "name": item.pizza.name,
+                    "size": item.size,
+                    "quantity": item.quantity,
+                    "toppings": list(filter(None, [
+                        item.topping_1.name if item.topping_1 else None,
+                        item.topping_2.name if item.topping_2 else None,
+                        item.topping_3.name if item.topping_3 else None
+                    ]))
+                }
+                for item in self.orderpizza_set.all()
+            ],
+            "wings": [
+                {"flavor": item.wing.name, "quantity": item.quantity}
+                for item in self.orderwings_set.all()
+            ],
+            "drinks": [
+                {"name": item.drink.name, "quantity": item.quantity}
+                for item in self.orderdrinks_set.all()
+            ],
+            "desserts": [
+                {"name": item.dessert.name, "quantity": item.quantity}
+                for item in self.orderdesserts_set.all()
+            ],
+        }
+
+        # ---------------------------------------------
+        # Add pricing: subtotal, discount, tax, coupon
+        # ---------------------------------------------
+        final_total = float(self.total_price)  # This is what was paid
+        tax_rate = 0.0725  # NC tax
+        coupon_code = None
+        discount_percentage = 0.0
+        discount_amount = 0.0
+        sales_tax = 0.0
+
+        if hasattr(self, "_applied_discount"):
+            discount_info = self._applied_discount
+            discount_percentage = float(discount_info.get("percentage", 0))
+            coupon_code = discount_info.get("code") or discount_info.get("name")
+
+            subtotal = final_total / (1 + tax_rate)
+            discount_amount = (subtotal * discount_percentage) / (100 - discount_percentage)
+            subtotal += discount_amount
+            sales_tax = (subtotal - discount_amount) * tax_rate
+
+            order_data["coupon"] = {
+                "code": coupon_code,
+                "percentage": discount_percentage
+            }
+        else:
+            subtotal = final_total / (1 + tax_rate)
+            sales_tax = subtotal * tax_rate
+            order_data["coupon"] = None
+
+        final_price = subtotal + sales_tax
+
+        # Remove detailed tax/discount lines from final summary
+        order_data["subtotal_before_tax_and_discount"] = final_price
+        order_data["tax_rate"] = tax_rate
+
+        return json.dumps(order_data)
 
     def calculate_total_price(self):
         """ Calculate the total price of the order based on items. """
