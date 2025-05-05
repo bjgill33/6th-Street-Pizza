@@ -42,7 +42,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 # Handles general-purpose JSON parsing/handling
 import json
 
-
 # For regular expression
 import re
 
@@ -1101,3 +1100,18 @@ def cart_view(request):
 def clear_cart(request):
     request.session['cart'] = {}  # Clear the cart in session
     return redirect('menu')
+
+
+# Data Collection For Delievery Forms
+def get_session_delivery_data(request):
+    return JsonResponse({
+        "status": "ok",
+        "email": request.session.get("email", ""),
+        "fullName": request.session.get("full_name", ""),
+        "phone": request.session.get("phone", ""),
+        "address": request.session.get("address", ""),
+        "city": request.session.get("city", ""),
+        "state": request.session.get("state", ""),
+        "zip": request.session.get("zip", ""),
+        "specialInstructions": request.session.get("special_instructions", "")
+    })
